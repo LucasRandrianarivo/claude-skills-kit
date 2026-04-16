@@ -1,0 +1,33 @@
+{
+  "name": "claude-skills-kit",
+  "version": "1.0.0",
+  "description": "Production-ready skills, agents, and rules for Claude Code. Structured debugging, 4-phase code review, build validation, design audits, and more — auto-detected for your stack.",
+  "author": "Lucas Randrianarivo <luca@supplyos.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucasRandrianarivo/claude-skills-kit.git"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "skills",
+    "agents",
+    "vibe-coding",
+    "code-review",
+    "debugging",
+    "frontend",
+    "developer-tools"
+  ],
+  "bin": {
+    "claude-skills-kit": "./bin/install.js"
+  },
+  "files": [
+    "bin/",
+    "skills/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ]
+}
