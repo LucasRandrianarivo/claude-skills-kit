@@ -2,6 +2,8 @@
 
 The complete skills kit for [Claude Code](https://claude.ai/code) — **40+ production-ready commands, subagents, and rules** covering the full dev lifecycle: spec → plan reviews → code → debug → QA → review → security → ship → deploy → retro. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
 
+![npx claude-skills-kit init — stack detection and skill installation demo](https://raw.githubusercontent.com/LucasRandrianarivo/claude-skills-kit/main/docs/demo.gif)
+
 ## Install
 
 ```bash
