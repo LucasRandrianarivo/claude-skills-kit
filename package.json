@@ -1,7 +1,7 @@
 {
   "name": "claude-skills-kit",
-  "version": "1.0.0",
-  "description": "Production-ready skills, agents, and rules for Claude Code. Structured debugging, 4-phase code review, build validation, design audits, and more — auto-detected for your stack.",
+  "version": "2.0.0",
+  "description": "The complete skills kit for Claude Code — 40+ production-ready commands, subagents, and rules covering the full dev lifecycle: spec, plan reviews, coding, debugging, QA, security, design, ship, deploy. Auto-detected for your stack.",
   "author": "Lucas Randrianarivo <luca@supplyos.com>",
   "license": "MIT",
   "repository": {
@@ -14,10 +14,18 @@
     "ai",
     "skills",
     "agents",
+    "subagents",
+    "slash-commands",
     "vibe-coding",
     "code-review",
     "debugging",
+    "qa",
+    "security",
+    "design",
+    "ship",
+    "deploy",
     "frontend",
+    "backend",
     "developer-tools"
   ],
   "bin": {
@@ -28,6 +36,7 @@
     "skills/",
     "templates/",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ]
 }
