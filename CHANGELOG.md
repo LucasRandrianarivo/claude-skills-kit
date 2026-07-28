@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 — 2026-07-28
+
+Docs only: installer demo GIF in the README (also fixes the command count: 42 in full profile).
+
 ## 2.0.0 — 2026-07-28
 
 The lifecycle release: from a review/debug kit to a complete dev-lifecycle kit.

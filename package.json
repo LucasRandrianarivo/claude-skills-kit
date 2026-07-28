@@ -1,6 +1,6 @@
 {
   "name": "claude-skills-kit",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The complete skills kit for Claude Code — 40+ production-ready commands, subagents, and rules covering the full dev lifecycle: spec, plan reviews, coding, debugging, QA, security, design, ship, deploy. Auto-detected for your stack.",
   "author": "Lucas Randrianarivo <luca@supplyos.com>",
   "license": "MIT",
