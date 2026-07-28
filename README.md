@@ -178,7 +178,7 @@ Unknown stack? Every stack-aware category has a `generic.md` fallback that disco
 ```
 your-project/
 ├── .claude/
-│   ├── commands/          ← all slash commands (37 in full profile)
+│   ├── commands/          ← all slash commands (42 in full profile)
 │   ├── agents/            ← 12 subagents with proper frontmatter
 │   ├── rules/             ← 7 rules, imported by CLAUDE.md
 │   ├── context/           ← saved working contexts (/context-save)
