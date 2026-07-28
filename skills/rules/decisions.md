@@ -48,6 +48,18 @@ Append an entry whenever a **significant** decision is made:
 
 **The test:** would a teammate (or future session) plausibly ask "why did we do it this way?" If yes, log it.
 
+## Automatic ADR Escalation
+
+Some decisions deserve more than a JSONL line. **At the moment the decision lands** (not later, not on request), also create an Architecture Decision Record in `docs/adr/` (via the `/adr new` flow — numbered file, template with Context / Decision / Options considered / Consequences) when the decision:
+
+- shapes module boundaries, layering, or data flow
+- picks a technology, dependency, or service with lock-in
+- is a one-way door (expensive or impossible to reverse)
+- trades off two qualities (consistency vs speed, cost vs latency, DX vs safety)
+- contradicts an obvious default — the future "why not X?" question is guaranteed
+
+Write the ADR **without being asked**, tell the user in one line ("ADR 0007 créé : …"), and add `"adr":"NNNN"` to the JSONL entry so the two layers cross-link. If the user rejects the ADR, delete it and keep only the JSONL line. Everything below the bar stays JSONL-only.
+
 ## Writing Discipline
 
 - One JSON object per line, valid JSONL — no pretty-printing, no trailing commas
@@ -58,9 +70,9 @@ Append an entry whenever a **significant** decision is made:
 
 ## When to Read
 
-Consult `.claude/decisions.jsonl`:
+Consult `.claude/decisions.jsonl` **and `docs/adr/`**:
 
-1. **Before proposing an architecture or dependency change** — check whether this ground is already settled; do not silently relitigate a logged decision
+1. **Before proposing an architecture or dependency change** — check whether this ground is already settled (an accepted ADR is binding: follow it, or propose a superseding ADR — never silently contradict it)
 2. **At the start of `/feat`** — scan for decisions touching the feature's area
 3. **When the user asks "why …"** about past design — answer from the log via `/decisions --why <term>` before guessing from code
 4. **When something looks wrong on purpose** — a logged tradeoff explains deliberate weirdness; check before "fixing" it

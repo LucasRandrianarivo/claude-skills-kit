@@ -102,6 +102,7 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/scrape` | Pull structured data from a web page (curl first, Playwright for JS-rendered), politely |
 | `/skillify` | Meta-skill: codify the workflow you just did into a permanent reusable command |
 | `/rag` | Shared local semantic memory: status, index documents, cross-project semantic search |
+| `/adr` | Architecture Decision Records in `docs/adr/` — created **automatically** by the decisions rule when a significant decision lands; list, supersede, promote, RAG-index |
 
 ### Subagents
 
@@ -136,7 +137,7 @@ Specialist reviewers — dispatched automatically by `/pr-review` based on what 
 | `freeze` | "freeze to `<dir>`" scopes all edits to that subtree for the session |
 | `guard` | Maximum-safety mode: careful escalated + freeze + confirmation gates + dry-run-first |
 | `learnings` | Log bugs/fixes to `.claude/learnings.jsonl`; consult them before debugging |
-| `decisions` | Auto-log significant decisions to `.claude/decisions.jsonl` |
+| `decisions` | Auto-log significant decisions to `.claude/decisions.jsonl`; auto-escalate architecture-shaping ones into ADRs (`docs/adr/`); accepted ADRs are binding |
 | `greeting` | "Bonjour" lists all available skills dynamically |
 
 Rules are activated through `@.claude/rules/*.md` imports in the managed CLAUDE.md block, so they actually load every session.

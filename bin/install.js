@@ -66,7 +66,7 @@ const GROUPS = {
   ],
   knowledge: [
     'learn', 'decisions', 'context-save', 'context-restore',
-    'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag',
+    'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag', 'adr',
   ],
 };
 

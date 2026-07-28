@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.0 — 2026-07-28
+
+Architecture Decision Records, recorded automatically.
+
+- **`/adr` command**: create (`new`, with a mandatory options-considered table), `list`, `show`, `status` (supersede with back-links, accepted ADRs immutable), `from-decisions` (promote significant `.claude/decisions.jsonl` entries), `index` (into the local RAG, collection `<repo>-adr`).
+- **`decisions` rule upgraded**: architecture-shaping decisions (module boundaries, lock-in dependencies, one-way doors, quality tradeoffs) now auto-escalate into an ADR **the moment they land**, cross-linked with the JSONL entry; accepted ADRs are binding — Claude follows them or proposes a superseding ADR, never silently contradicts one.
+
 ## 2.1.0 — 2026-07-28
 
 Local semantic memory (RAG) in one command.
