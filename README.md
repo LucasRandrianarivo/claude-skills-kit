@@ -101,6 +101,7 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/make-pdf` | Markdown → publication-quality PDF with print-CSS quality bar and verification pass |
 | `/scrape` | Pull structured data from a web page (curl first, Playwright for JS-rendered), politely |
 | `/skillify` | Meta-skill: codify the workflow you just did into a permanent reusable command |
+| `/rag` | Shared local semantic memory: status, index documents, cross-project semantic search |
 
 ### Subagents
 
@@ -139,6 +140,28 @@ Specialist reviewers — dispatched automatically by `/pr-review` based on what 
 | `greeting` | "Bonjour" lists all available skills dynamically |
 
 Rules are activated through `@.claude/rules/*.md` imports in the managed CLAUDE.md block, so they actually load every session.
+
+## Local RAG — one-command semantic memory
+
+```bash
+npx claude-skills-kit setup-rag              # install everything
+npx claude-skills-kit setup-rag --port 9000  # custom port
+npx claude-skills-kit setup-rag --remove     # clean uninstall (data preserved)
+```
+
+One command gives every Claude Code session on your machine a **shared, 100% local semantic memory** — no API key, no account, nothing leaves your machine:
+
+| Piece | What it does |
+|---|---|
+| Chroma server (Docker, auto-restart) | One shared vector store for all projects — parallel sessions are safely coordinated |
+| Local ONNX embeddings | all-MiniLM-L6-v2 runs on your machine; downloaded once, zero cost |
+| MCP server `rag` (user scope) | Index/query tools available in every project |
+| SessionStart auto-heal hook | Restarts the container at session start if it's down |
+| Usage policy in `~/.claude/CLAUDE.md` | Claude knows *when* to query and index, with anti-duplication conventions |
+
+Then in any session: `/rag index docs/`, `/rag search "how does pricing work"`, or just ask naturally — Claude queries it when the repo can't answer.
+
+**Requirements**: Docker + Python 3. **What belongs in the RAG**: durable documents (audits, specs, vendor docs, post-mortems) — not code (agentic Grep beats embeddings for code) and never secrets.
 
 ## Profiles
 

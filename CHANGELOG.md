@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.1.0 — 2026-07-28
+
+Local semantic memory (RAG) in one command.
+
+- **`npx claude-skills-kit setup-rag`**: installs a shared local vector store — Chroma server in Docker (auto-restart, one server coordinating all parallel sessions), local ONNX embeddings (no API key), `rag` MCP server registered user-scope, SessionStart auto-heal hook, and a usage policy in `~/.claude/CLAUDE.md` (when to query/index, anti-duplication conventions, secrets excluded). `--port <n>` to customize, `--remove` for a clean uninstall (data preserved).
+- **`/rag` command**: status, collections, `index <path>` (chunking, stable ids, metadata), `search <query>` (cross-collection semantic search with honest-distance reporting).
+
 ## 2.0.1 — 2026-07-28
 
 Docs only: installer demo GIF in the README (also fixes the command count: 42 in full profile).

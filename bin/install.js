@@ -66,7 +66,7 @@ const GROUPS = {
   ],
   knowledge: [
     'learn', 'decisions', 'context-save', 'context-restore',
-    'document', 'diagram', 'make-pdf', 'scrape', 'skillify',
+    'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag',
   ],
 };
 
@@ -646,6 +646,217 @@ function cmdInit() {
   console.log('  npx claude-skills-kit list\n');
 }
 
+// ── setup-rag: one-command local RAG (Docker Chroma + MCP + hook + policy) ─────
+
+const { execSync, spawnSync } = require('child_process');
+const os = require('os');
+
+function sh(cmd, opts) {
+  return execSync(cmd, Object.assign({ encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }, opts)).trim();
+}
+function trySh(cmd) {
+  try { return sh(cmd); } catch { return null; }
+}
+
+const RAG_CONTAINER = 'claude-rag';
+const RAG_DATA_DIR = path.join(os.homedir(), '.claude', 'rag-server');
+const RAG_POLICY_START = '<!-- claude-skills-kit:rag:start -->';
+const RAG_POLICY_END = '<!-- claude-skills-kit:rag:end -->';
+
+function ragPolicyBlock(port) {
+  return [
+    '', RAG_POLICY_START,
+    '## Local RAG — MCP server « rag » (shared, always available)',
+    '',
+    `A user-scoped MCP server named \`rag\` exposes a shared local vector store (Chroma in Docker on \`localhost:${port}\`, container \`${RAG_CONTAINER}\`, local ONNX embeddings — no API key, nothing leaves the machine). All sessions across all projects talk to this single server. Use it as persistent semantic memory:`,
+    '',
+    '**Query it** (`chroma_query_documents`, after `chroma_list_collections` if unsure) when the user asks a knowledge question the current repo cannot answer (past audits, vendor docs, decisions, cross-project learnings), or says "search the RAG / qu\'est-ce qu\'on sait sur…".',
+    '',
+    '**Index into it** (`chroma_add_documents`) when a durable document is produced or analyzed, or on request. Chunk 500–1500 chars, stable prefixed ids (`<source-slug>-<n>`), metadata `{"source","project","date"}` — upsert so re-indexing never duplicates.',
+    '',
+    '**Conventions**: one collection per corpus (kebab-case); always fill the `project` metadata field; check existing collections before creating; never delete a collection another project may use without asking; code stays out (use Grep on the repo); never index secrets or .env contents.',
+    '',
+    `**If the server is down**: \`docker start ${RAG_CONTAINER}\` (requires Docker running).`,
+    RAG_POLICY_END, '',
+  ].join('\n');
+}
+
+function ragHookCommand(dockerPath) {
+  return `d=${dockerPath}; "$d" ps -q --filter name=${RAG_CONTAINER} --filter status=running 2>/dev/null | grep -q . && exit 0; "$d" start ${RAG_CONTAINER} >/dev/null 2>&1 && echo "{\\"systemMessage\\":\\"RAG: container ${RAG_CONTAINER} restarted\\"}" || echo "{\\"systemMessage\\":\\"RAG unavailable — start Docker, then: docker start ${RAG_CONTAINER}\\"}"`;
+}
+
+function cmdSetupRag() {
+  const remove = args.includes('--remove');
+  const port = flagValue('--port') || '8765';
+  const userSettingsPath = path.join(os.homedir(), '.claude', 'settings.json');
+  const userClaudeMdPath = path.join(os.homedir(), '.claude', 'CLAUDE.md');
+
+  console.log('\n  claude-skills-kit — local RAG setup');
+  console.log('  ===================================');
+
+  const dockerPath = trySh('command -v docker');
+  const claudePath = trySh('command -v claude');
+
+  if (remove) {
+    heading('Removing local RAG');
+    if (dockerPath) {
+      trySh(`docker rm -f ${RAG_CONTAINER}`);
+      log(SYM.ok, `container ${RAG_CONTAINER} removed (data kept in ${RAG_DATA_DIR})`);
+    }
+    if (claudePath) {
+      trySh('claude mcp remove --scope user rag');
+      log(SYM.ok, 'MCP server "rag" unregistered');
+    }
+    if (fs.existsSync(userClaudeMdPath)) {
+      const md = fs.readFileSync(userClaudeMdPath, 'utf8');
+      if (md.includes(RAG_POLICY_START)) {
+        const pattern = new RegExp(`\\n?${RAG_POLICY_START}[\\s\\S]*?${RAG_POLICY_END}\\n?`);
+        fs.writeFileSync(userClaudeMdPath, md.replace(pattern, '\n'), 'utf8');
+        log(SYM.ok, 'RAG policy removed from ~/.claude/CLAUDE.md');
+      }
+    }
+    if (fs.existsSync(userSettingsPath)) {
+      try {
+        const st = JSON.parse(fs.readFileSync(userSettingsPath, 'utf8'));
+        if (st.hooks && st.hooks.SessionStart) {
+          st.hooks.SessionStart = st.hooks.SessionStart.filter(
+            (e) => !JSON.stringify(e).includes(RAG_CONTAINER));
+          if (st.hooks.SessionStart.length === 0) delete st.hooks.SessionStart;
+          if (Object.keys(st.hooks).length === 0) delete st.hooks;
+          fs.writeFileSync(userSettingsPath, JSON.stringify(st, null, 2), 'utf8');
+          log(SYM.ok, 'SessionStart hook removed');
+        }
+      } catch { log(SYM.err, 'could not parse ~/.claude/settings.json — hook left as is'); }
+    }
+    console.log('\n  Done. Delete the data with: rm -rf ' + RAG_DATA_DIR + '\n');
+    return;
+  }
+
+  // ── 1. Preflight ─────────────────────────────────────────────────────────
+  heading('Preflight');
+  if (!dockerPath) {
+    log(SYM.err, 'docker not found — install Docker Desktop (or docker engine) first');
+    process.exit(1);
+  }
+  if (!trySh('docker info --format ok')) {
+    log(SYM.err, 'Docker daemon is not running — start Docker, then re-run this command');
+    process.exit(1);
+  }
+  log(SYM.ok, `docker  (${dockerPath})`);
+  const py = trySh('command -v python3');
+  if (!py) {
+    log(SYM.err, 'python3 not found — needed for the chroma-mcp bridge');
+    process.exit(1);
+  }
+  log(SYM.ok, `python3 (${py})`);
+  log(claudePath ? SYM.ok : SYM.skip, `claude CLI ${claudePath ? `(${claudePath})` : 'not found — MCP registration will be printed for manual setup'}`);
+
+  // ── 2. Chroma server container ───────────────────────────────────────────
+  heading('Chroma server (Docker)');
+  const existing = trySh(`docker ps -aq --filter name=^${RAG_CONTAINER}$`);
+  if (existing) {
+    trySh(`docker start ${RAG_CONTAINER}`);
+    log(SYM.ok, `container ${RAG_CONTAINER} already exists — started`);
+  } else {
+    if (FLAG_DRY) {
+      log(SYM.arrow, `would run chromadb/chroma on port ${port} (dry-run)`);
+    } else {
+      try {
+        sh(`docker run -d --name ${RAG_CONTAINER} --restart unless-stopped -p ${port}:8000 -v "${RAG_DATA_DIR}:/chroma/chroma" chromadb/chroma`);
+        log(SYM.ok, `container ${RAG_CONTAINER} running on localhost:${port} (data: ${RAG_DATA_DIR}, restarts automatically)`);
+      } catch (e) {
+        log(SYM.err, 'docker run failed:');
+        console.error(`    ${(e.stderr || e.message || '').toString().trim().split('\n')[0]}`);
+        console.error(`    If the port is taken, retry with: npx claude-skills-kit setup-rag --port <other>\n`);
+        process.exit(1);
+      }
+    }
+  }
+
+  // ── 3. chroma-mcp bridge ─────────────────────────────────────────────────
+  heading('MCP bridge (chroma-mcp)');
+  if (!FLAG_DRY && !trySh('python3 -m pip show chroma-mcp')) {
+    log(SYM.arrow, 'installing chroma-mcp via pip (one-time, may take a minute)...');
+    sh('python3 -m pip install --quiet chroma-mcp certifi', { stdio: 'ignore' });
+  }
+  const scriptsDir = trySh(`python3 -c "import sysconfig; print(sysconfig.get_path('scripts'))"`);
+  let mcpBin = trySh('command -v chroma-mcp') ||
+    (scriptsDir && fs.existsSync(path.join(scriptsDir, 'chroma-mcp')) ? path.join(scriptsDir, 'chroma-mcp') : null);
+  if (!mcpBin && !FLAG_DRY) {
+    log(SYM.err, 'chroma-mcp not found after install — check `python3 -m pip install chroma-mcp`');
+    process.exit(1);
+  }
+  log(SYM.ok, `chroma-mcp (${mcpBin || 'dry-run'})`);
+
+  // ── 4. Register MCP server (user scope) ──────────────────────────────────
+  heading('Claude Code MCP registration');
+  const cert = trySh(`python3 -c "import certifi; print(certifi.where())"`);
+  const envFlags = (cert ? `-e SSL_CERT_FILE=${cert} ` : '') + '-e ANONYMIZED_TELEMETRY=False';
+  const addCmd = `claude mcp add --scope user ${envFlags} -- rag ${mcpBin} --client-type http --host localhost --port ${port} --ssl false`;
+  if (!claudePath) {
+    log(SYM.arrow, 'run this manually once the claude CLI is installed:');
+    console.log(`\n    ${addCmd}\n`);
+  } else if (FLAG_DRY) {
+    log(SYM.arrow, 'would register MCP server "rag" (dry-run)');
+  } else {
+    trySh('claude mcp remove --scope user rag');
+    sh(addCmd);
+    log(SYM.ok, 'MCP server "rag" registered (user scope — available in every project)');
+  }
+
+  // ── 5. SessionStart hook (auto-heal) ─────────────────────────────────────
+  heading('SessionStart hook');
+  if (FLAG_DRY) {
+    log(SYM.arrow, 'would add auto-heal hook to ~/.claude/settings.json (dry-run)');
+  } else {
+    let st = {};
+    try { st = JSON.parse(fs.readFileSync(userSettingsPath, 'utf8')); } catch { /* new file */ }
+    st.hooks = st.hooks || {};
+    st.hooks.SessionStart = st.hooks.SessionStart || [];
+    if (JSON.stringify(st.hooks.SessionStart).includes(RAG_CONTAINER)) {
+      log(SYM.skip, 'hook already present');
+    } else {
+      st.hooks.SessionStart.push({
+        hooks: [{ type: 'command', command: ragHookCommand(dockerPath), timeout: 15, statusMessage: 'Checking RAG server…' }],
+      });
+      fs.mkdirSync(path.dirname(userSettingsPath), { recursive: true });
+      fs.writeFileSync(userSettingsPath, JSON.stringify(st, null, 2), 'utf8');
+      log(SYM.ok, 'auto-heal hook added (restarts the container at session start if needed)');
+    }
+  }
+
+  // ── 6. Usage policy in global CLAUDE.md ──────────────────────────────────
+  heading('Usage policy (~/.claude/CLAUDE.md)');
+  if (FLAG_DRY) {
+    log(SYM.arrow, 'would write RAG usage policy (dry-run)');
+  } else {
+    const md = fs.existsSync(userClaudeMdPath) ? fs.readFileSync(userClaudeMdPath, 'utf8') : '# Global instructions (all projects)\n';
+    if (md.includes(RAG_POLICY_START)) {
+      const pattern = new RegExp(`${RAG_POLICY_START}[\\s\\S]*?${RAG_POLICY_END}`);
+      fs.writeFileSync(userClaudeMdPath, md.replace(pattern, ragPolicyBlock(port).trim()), 'utf8');
+      log(SYM.ok, 'policy refreshed');
+    } else {
+      fs.writeFileSync(userClaudeMdPath, md + ragPolicyBlock(port), 'utf8');
+      log(SYM.ok, 'policy appended — loaded by every session in every project');
+    }
+  }
+
+  // ── 7. Smoke test ────────────────────────────────────────────────────────
+  heading('Smoke test');
+  if (!FLAG_DRY) {
+    let ok = false;
+    for (let i = 0; i < 10 && !ok; i++) {
+      ok = !!trySh(`curl -s --max-time 2 http://localhost:${port}/api/v2/heartbeat`);
+      if (!ok) spawnSync('sleep', ['1']);
+    }
+    log(ok ? SYM.ok : SYM.err, ok ? 'Chroma server responds' : `server not responding on port ${port} — check \`docker logs ${RAG_CONTAINER}\``);
+  }
+
+  console.log('\n  Done! Open a new Claude Code session anywhere and try:');
+  console.log('  “indexe docs/ dans une collection <project>-docs” or /rag status');
+  console.log('  Remove everything with: npx claude-skills-kit setup-rag --remove\n');
+}
+
 // ── Main ───────────────────────────────────────────────────────────────────────
 
 function main() {
@@ -684,9 +895,12 @@ function main() {
       FLAG_FORCE = true;
       cmdInit();
       break;
+    case 'setup-rag':
+      cmdSetupRag();
+      break;
     default:
       console.error(`\n  ${SYM.err} Unknown command: ${COMMAND}`);
-      console.error('    Usage: npx claude-skills-kit <init|list|add|remove|update> [options]\n');
+      console.error('    Usage: npx claude-skills-kit <init|list|add|remove|update|setup-rag> [options]\n');
       process.exit(1);
   }
 }
