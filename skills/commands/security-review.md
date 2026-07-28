@@ -1,3 +1,8 @@
+---
+description: Security audit of changed code — auth, validation, injection, data protection
+argument-hint: "[files]"
+---
+
 # /security-review — Security Audit (Phase 4)
 
 ## Usage

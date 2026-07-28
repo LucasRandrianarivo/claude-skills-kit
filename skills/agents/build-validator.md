@@ -1,3 +1,8 @@
+---
+name: build-validator
+description: Runs the full project quality gate (lint, typecheck, format, build) and reports per-step results with proposed fixes. Use before commits, merges, or to close out a task.
+tools: Bash, Read, Grep, Glob
+---
 # Agent: Build Validator
 
 ## Role

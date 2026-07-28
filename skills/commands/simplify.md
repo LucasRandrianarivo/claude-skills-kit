@@ -1,3 +1,8 @@
+---
+description: Readability review only — nesting, conditions, clarity, abstractions
+argument-hint: "[files]"
+---
+
 # /simplify — Readability Review (Phase 2)
 
 ## Usage

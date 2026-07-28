@@ -1,3 +1,8 @@
+---
+description: Structured 4-phase debugging for Next.js Pages Router — no fix without root cause
+argument-hint: "<bug description>"
+---
+
 # /debug — Structured Debugging (Next.js Pages Router)
 
 ## Usage

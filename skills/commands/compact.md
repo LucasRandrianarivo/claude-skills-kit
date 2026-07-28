@@ -1,3 +1,8 @@
+---
+description: Code quality review only — dead code, duplication, naming, typing, error handling
+argument-hint: "[files]"
+---
+
 # /compact — Code Quality Review (Phase 1)
 
 ## Usage

@@ -1,3 +1,8 @@
+---
+description: Scaffold a feature for React + Vite following project conventions
+argument-hint: "<feature description>"
+---
+
 # /scaffolder — Feature Scaffolding (React + Vite SPA)
 
 ## Usage

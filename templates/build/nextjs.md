@@ -1,3 +1,7 @@
+---
+description: Build pipeline for Next.js — typecheck, lint, build, verify output
+---
+
 # /build — Build Pipeline (Next.js)
 
 ## Usage

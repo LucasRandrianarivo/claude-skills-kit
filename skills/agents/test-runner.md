@@ -1,3 +1,8 @@
+---
+name: test-runner
+description: Runs the project test suite, diagnoses failures with exact file:line causes, and proposes or applies fixes.
+tools: Bash, Read, Grep, Edit
+---
 # Agent: Test Runner
 
 ## Role

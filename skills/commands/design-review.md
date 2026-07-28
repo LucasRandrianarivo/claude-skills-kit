@@ -1,3 +1,8 @@
+---
+description: Visual audit — screenshot, detect UI issues, fix, verify
+argument-hint: "[url or route]"
+---
+
 # /design-review — Visual Design Audit
 
 ## Usage

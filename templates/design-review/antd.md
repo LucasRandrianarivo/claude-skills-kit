@@ -1,3 +1,8 @@
+---
+description: Visual/UI audit for Ant Design apps — tokens, spacing, states, consistency
+argument-hint: "[url or route]"
+---
+
 # /design-review — Visual Audit (Ant Design)
 
 ## Usage

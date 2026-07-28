@@ -1,3 +1,8 @@
+---
+description: Visual/UI audit for Tailwind apps — scale adherence, spacing, states, consistency
+argument-hint: "[url or route]"
+---
+
 # /design-review — Visual Audit (Tailwind CSS)
 
 ## Usage
