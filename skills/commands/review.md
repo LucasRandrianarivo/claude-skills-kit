@@ -1,3 +1,8 @@
+---
+description: Full 4-phase code review — quality, readability, architecture, security
+argument-hint: "[files] [--last] [--branch]"
+---
+
 # /review — Full 4-Phase Code Review
 
 ## Usage

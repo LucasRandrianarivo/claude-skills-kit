@@ -1,3 +1,8 @@
+---
+description: Visual/UI audit for Chakra UI apps — theme tokens, spacing, states, consistency
+argument-hint: "[url or route]"
+---
+
 # /design-review — Visual Audit (Chakra UI)
 
 ## Usage

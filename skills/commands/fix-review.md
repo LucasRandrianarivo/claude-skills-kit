@@ -1,3 +1,7 @@
+---
+description: Auto-fix all issues found by /review, then re-validate
+---
+
 # /fix-review — Auto-Fix Code Review Issues
 
 ## Usage

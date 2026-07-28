@@ -1,3 +1,8 @@
+---
+description: Structured 4-phase debugging for Node/Express backends — no fix without root cause
+argument-hint: "<bug description>"
+---
+
 # /debug — Structured Debugging (Node.js Express/Fastify)
 
 ## Usage

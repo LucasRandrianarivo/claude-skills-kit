@@ -1,3 +1,8 @@
+---
+description: Run and diagnose Jest tests — classify failures, fix test or source
+argument-hint: "[file or pattern]"
+---
+
 # /test — Test Runner (Jest)
 
 ## Usage

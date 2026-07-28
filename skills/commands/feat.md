@@ -1,3 +1,8 @@
+---
+description: Full feature orchestration — analysis, clarification, plan, code, tests, review
+argument-hint: "<feature description>"
+---
+
 # /feat — Feature Development Orchestrator
 
 ## Usage

@@ -1,3 +1,8 @@
+---
+description: Structured 4-phase debugging for React + Vite — no fix without root cause
+argument-hint: "<bug description>"
+---
+
 # /debug — Structured Debugging (React + Vite SPA)
 
 ## Usage

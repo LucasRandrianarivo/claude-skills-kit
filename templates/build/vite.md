@@ -1,3 +1,7 @@
+---
+description: Build pipeline for Vite — typecheck, lint, build, verify output
+---
+
 # /build — Build Pipeline (Vite)
 
 ## Usage

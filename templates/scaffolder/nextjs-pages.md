@@ -1,3 +1,8 @@
+---
+description: Scaffold a feature for Next.js Pages Router following project conventions
+argument-hint: "<feature description>"
+---
+
 # /scaffolder — Feature Scaffolding (Next.js Pages Router)
 
 ## Usage

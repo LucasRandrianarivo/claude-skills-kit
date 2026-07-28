@@ -1,3 +1,8 @@
+---
+description: Run and diagnose Vitest tests — classify failures, fix test or source
+argument-hint: "[file or pattern]"
+---
+
 # /test — Test Runner (Vitest)
 
 ## Usage

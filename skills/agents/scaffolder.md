@@ -1,3 +1,8 @@
+---
+name: scaffolder
+description: Creates the files for a new feature following the project's existing conventions, replicating patterns from CLAUDE.md and neighboring files.
+tools: Read, Grep, Glob, Edit, Write
+---
 # Agent: Scaffolder
 
 ## Role
