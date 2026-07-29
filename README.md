@@ -158,6 +158,7 @@ One command gives every Claude Code session on your machine a **shared, 100% loc
 | Local ONNX embeddings | all-MiniLM-L6-v2 runs on your machine; downloaded once, zero cost |
 | MCP server `rag` (user scope) | Index/query tools available in every project |
 | SessionStart auto-heal hook | Restarts the container at session start if it's down |
+| PostCompact discussion capture | Every compaction summary is secret-redacted, archived and indexed — **no conversation is lost** |
 | Usage policy in `~/.claude/CLAUDE.md` | Claude knows *when* to query and index, with anti-duplication conventions |
 
 Then in any session: `/rag index docs/`, `/rag search "how does pricing work"`, or just ask naturally — Claude queries it when the repo can't answer.

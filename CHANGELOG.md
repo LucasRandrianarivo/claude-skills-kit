@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.0 — 2026-07-29
+
+No conversation is lost.
+
+- **`setup-rag` now installs discussion capture**: a PostCompact hook feeds every compaction summary — already an LLM-distilled digest of the conversation, far better signal than raw transcripts — into the local RAG (collection `discussions`), secret-redacted, with a markdown archive in `~/.claude/discussions/`. Async: never blocks a session. Query from any project: "qu'est-ce qu'on s'était dit sur X ?". `--remove` cleans it up (archives kept).
+
 ## 2.2.0 — 2026-07-28
 
 Architecture Decision Records, recorded automatically.

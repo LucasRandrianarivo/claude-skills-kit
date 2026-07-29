@@ -676,6 +676,8 @@ function ragPolicyBlock(port) {
     '',
     '**Conventions**: one collection per corpus (kebab-case); always fill the `project` metadata field; check existing collections before creating; never delete a collection another project may use without asking; code stays out (use Grep on the repo); never index secrets or .env contents.',
     '',
+    '**Discussions**: the `discussions` collection is fed automatically by a PostCompact hook (compaction summaries, secret-redacted, archived in `~/.claude/discussions/`). Query it for "what did we say about…", "where were we on…" — filter by `project` metadata when relevant.',
+    '',
     `**If the server is down**: \`docker start ${RAG_CONTAINER}\` (requires Docker running).`,
     RAG_POLICY_END, '',
   ].join('\n');
@@ -722,11 +724,21 @@ function cmdSetupRag() {
           st.hooks.SessionStart = st.hooks.SessionStart.filter(
             (e) => !JSON.stringify(e).includes(RAG_CONTAINER));
           if (st.hooks.SessionStart.length === 0) delete st.hooks.SessionStart;
-          if (Object.keys(st.hooks).length === 0) delete st.hooks;
-          fs.writeFileSync(userSettingsPath, JSON.stringify(st, null, 2), 'utf8');
-          log(SYM.ok, 'SessionStart hook removed');
         }
-      } catch { log(SYM.err, 'could not parse ~/.claude/settings.json — hook left as is'); }
+        if (st.hooks && st.hooks.PostCompact) {
+          st.hooks.PostCompact = st.hooks.PostCompact.filter(
+            (e) => !JSON.stringify(e).includes('index-discussion'));
+          if (st.hooks.PostCompact.length === 0) delete st.hooks.PostCompact;
+        }
+        if (st.hooks && Object.keys(st.hooks).length === 0) delete st.hooks;
+        fs.writeFileSync(userSettingsPath, JSON.stringify(st, null, 2), 'utf8');
+        log(SYM.ok, 'SessionStart + PostCompact hooks removed');
+      } catch { log(SYM.err, 'could not parse ~/.claude/settings.json — hooks left as is'); }
+    }
+    const indexer = path.join(os.homedir(), '.claude', 'bin', 'index-discussion.py');
+    if (fs.existsSync(indexer)) {
+      fs.unlinkSync(indexer);
+      log(SYM.ok, 'discussion indexer removed (archives kept in ~/.claude/discussions/)');
     }
     console.log('\n  Done. Delete the data with: rm -rf ' + RAG_DATA_DIR + '\n');
     return;
@@ -822,6 +834,37 @@ function cmdSetupRag() {
       fs.mkdirSync(path.dirname(userSettingsPath), { recursive: true });
       fs.writeFileSync(userSettingsPath, JSON.stringify(st, null, 2), 'utf8');
       log(SYM.ok, 'auto-heal hook added (restarts the container at session start if needed)');
+    }
+  }
+
+  // ── 5b. Discussion capture (PostCompact → RAG) ───────────────────────────
+  heading('Discussion capture');
+  const indexerSrc = path.join(PKG_ROOT, 'assets', 'index-discussion.py');
+  const indexerDest = path.join(os.homedir(), '.claude', 'bin', 'index-discussion.py');
+  if (FLAG_DRY) {
+    log(SYM.arrow, 'would install PostCompact hook + indexer (dry-run)');
+  } else {
+    fs.mkdirSync(path.dirname(indexerDest), { recursive: true });
+    fs.copyFileSync(indexerSrc, indexerDest);
+    let st = {};
+    try { st = JSON.parse(fs.readFileSync(userSettingsPath, 'utf8')); } catch { /* new file */ }
+    st.hooks = st.hooks || {};
+    st.hooks.PostCompact = st.hooks.PostCompact || [];
+    if (JSON.stringify(st.hooks.PostCompact).includes('index-discussion')) {
+      log(SYM.skip, 'PostCompact hook already present');
+    } else {
+      const cert = trySh(`python3 -c "import certifi; print(certifi.where())"`);
+      st.hooks.PostCompact.push({
+        hooks: [{
+          type: 'command',
+          command: `${cert ? `SSL_CERT_FILE=${cert} ` : ''}CLAUDE_RAG_PORT=${port} /usr/bin/env python3 ${indexerDest}`,
+          timeout: 120,
+          async: true,
+          statusMessage: 'Indexing discussion into the RAG…',
+        }],
+      });
+      fs.writeFileSync(userSettingsPath, JSON.stringify(st, null, 2), 'utf8');
+      log(SYM.ok, 'every compaction summary is now archived (~/.claude/discussions/) and indexed (collection "discussions") — no conversation is lost');
     }
   }
 
