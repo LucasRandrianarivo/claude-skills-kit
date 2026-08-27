@@ -42,12 +42,16 @@ FROM deps AS build
 COPY . .
 RUN npm run build
 
-# 3. runtime — only what production needs
+# 3. prod-deps — production dependencies only, resolved from the same lockfile
+FROM deps AS prod-deps
+RUN npm ci --omit=dev
+
+# 4. runtime — only what production needs
 FROM <runtime>:<pinned-minor>-slim AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
-COPY --from=build /app/dist ./dist
-COPY --from=deps  /app/node_modules ./node_modules   # or a production-only install
+COPY --from=build     /app/dist         ./dist
+COPY --from=prod-deps /app/node_modules ./node_modules   # never from `deps`: that stage holds devDependencies
 USER node
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s CMD node healthcheck.js
@@ -60,7 +64,7 @@ Rules applied by this skill:
 - **Never run as root**: create or use a non-root user, and make sure the app's writable paths are owned by it.
 - **`.dockerignore`** with `node_modules`, `.git`, tests, `.env`, build caches, coverage — it shrinks the context and prevents secrets from entering the build.
 - **No secrets in layers**: never `COPY .env`, never `ARG` a token that ends up in history. Use BuildKit secret mounts (`RUN --mount=type=secret,...`) or inject at runtime.
-- **Only production dependencies** in the final stage; dev toolchains stay in the build stage.
+- **Only production dependencies** in the final stage: copying `node_modules` from the stage that ran the full install ships the whole dev toolchain — resolve them in a dedicated stage (`--omit=dev` / `--production` / `--only=main`) or prune before copying. Verify with `docker run <img> ls node_modules | wc -l` against the local production install.
 - **A real HEALTHCHECK** that exercises the app's readiness path, not `curl localhost` against a route that answers before the DB connects.
 - **Signals**: `CMD ["executable", "args"]` in exec form so SIGTERM reaches the process; add an init (`--init`/tini) when the process spawns children.
 - **Deterministic installs**: `npm ci` / `pnpm i --frozen-lockfile` / `uv sync --frozen` / `go mod download`, never a bare `install`.

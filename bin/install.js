@@ -311,13 +311,12 @@ function detectStack() {
   }
 
   // ── Mobile ─────────────────────────────────────────────────────────────────
-  if (has('expo')) {
-    stack.mobile = 'expo';
-    if (!has('next')) stack.framework = 'expo';
-  } else if (has('react-native')) {
-    stack.mobile = 'react-native';
-    if (!has('next')) stack.framework = 'react-native';
-  }
+  if (has('expo')) stack.mobile = 'expo';
+  else if (has('react-native')) stack.mobile = 'react-native';
+  // Only claim the framework slot when no web framework was detected — a
+  // monorepo root holding both (SvelteKit + Expo) keeps its web framework so
+  // the web-facing variants (build, component, debug) stay correct.
+  if (stack.mobile && stack.framework === 'node') stack.framework = stack.mobile;
 
   // ── UI library ─────────────────────────────────────────────────────────────
   if (has('antd')) stack.ui = 'antd';
@@ -401,7 +400,9 @@ function resolveTemplateVariant(category, stack) {
       }
       if (['nuxt', 'vue-vite'].includes(stack.framework)) candidates.push('vue.md');
       if (stack.framework === 'sveltekit') candidates.push('svelte.md');
-      if (stack.mobile === 'flutter') return null;   // Flutter widgets live in /mobile
+      // A pure Flutter project builds widgets through /mobile; a JS project that
+      // merely vendors a Flutter app still gets its own component skill.
+      if (stack.mobile === 'flutter' && stack.language === 'dart') return null;
       return pickVariant(category, candidates);
     }
 
@@ -441,7 +442,7 @@ function resolveTemplateVariant(category, stack) {
 const ROUTING_START = '<!-- claude-skills-kit:start -->';
 const ROUTING_END = '<!-- claude-skills-kit:end -->';
 
-function buildSkillRoutingBlock(stack, installedRules) {
+function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
   const stackLine = stack
     ? `Detected stack: **${stack.framework || stack.language}**` +
       (stack.ui !== 'none' ? ` + **${stack.ui}**` : '') +
@@ -453,6 +454,36 @@ function buildSkillRoutingBlock(stack, installedRules) {
   const ruleImports = installedRules
     .map((r) => `@.claude/rules/${r}.md`)
     .join('\n');
+
+  // Each row is listed with the commands it points at: a row is written only
+  // when at least one of them was actually installed for this profile.
+  const routingRows = [
+    [['project'], '| Run a whole project (idea → delivery) | `/project` (then `/brainstorm`, `/cdc`, `/roadmap`, `/exec-plan`, `/validate`, `/delivery`) |'],
+    [['spec'], '| Turn an idea into a spec | `/spec` |'],
+    [['autoplan', 'plan-eng-review'], '| Review a plan before building | `/autoplan` (or `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) |'],
+    [['feat', 'fullstack'], '| Build a feature end-to-end | `/feat` (one layer) or `/fullstack` (db + api + client, contract-first) |'],
+    [['contract'], '| Agree an API shape between layers | `/contract` |'],
+    [['orchestrate'], '| Run wide repetitive work with many agents | `/orchestrate` |'],
+    [['component'], '| Build a UI component | `/component`, then `/a11y` + `/responsive` |'],
+    [['a11y', 'responsive', 'web-vitals', 'state'], '| Frontend quality | `/a11y`, `/responsive`, `/web-vitals`, `/state` |'],
+    [['mobile', 'mobile-release'], `| Mobile work | ${[
+      installedCommands.has('mobile') ? '`/mobile`' : null,
+      installedCommands.has('mobile-release') ? '`/mobile-release`' : null,
+    ].filter(Boolean).join(', ')} |`],
+    [['api-scout', 'integrate', 'webhook'], '| Use a third-party API | `/api-scout` (choose) → `/integrate` (build) → `/webhook` (inbound) |'],
+    [['api-refresh'], '| Keep integrations current | `/api-refresh` |'],
+    [['debug', 'investigate'], '| Debug an issue | `/debug` (code) or `/investigate` (any anomaly) |'],
+    [['review', 'pr-review'], '| Review code | `/review` (local diff) or `/pr-review` (pull request) |'],
+    [['security-review', 'cso'], '| Security audit | `/security-review` (diff) or `/cso` (full codebase) |'],
+    [['qa'], '| QA a web app | `/qa` |'],
+    [['test', 'build'], '| Run tests / build | `/test`, `/build` |'],
+    [['design-system', 'design-variants', 'design-review'], '| Design work | `/design-system`, `/design-variants`, `/design-review` |'],
+    [['cicd', 'docker', 'nginx', 'git'], '| CI/CD, containers, server, git | `/cicd`, `/docker`, `/nginx`, `/git` |'],
+    [['ship', 'deploy', 'canary'], '| Ship & deploy | `/ship`, `/deploy`, `/canary` |'],
+    [['document', 'diagram', 'make-pdf'], '| Docs, diagrams, PDF | `/document`, `/diagram`, `/make-pdf` |'],
+    [['learn', 'decisions', 'context-save'], '| Knowledge & memory | `/learn`, `/decisions`, `/context-save`, `/context-restore` |'],
+    [['health', 'retro'], '| Health & retro | `/health`, `/retro` |'],
+  ];
 
   return [
     '',
@@ -466,28 +497,9 @@ function buildSkillRoutingBlock(stack, installedRules) {
     '',
     '| When the user wants to | Use |',
     '| --- | --- |',
-    '| Run a whole project (idea → delivery) | `/project` (then `/brainstorm`, `/cdc`, `/roadmap`, `/exec-plan`, `/validate`, `/delivery`) |',
-    '| Turn an idea into a spec | `/spec` |',
-    '| Review a plan before building | `/autoplan` (or `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) |',
-    '| Build a feature end-to-end | `/feat` (one layer) or `/fullstack` (db + api + client, contract-first) |',
-    '| Agree an API shape between layers | `/contract` |',
-    '| Run wide repetitive work with many agents | `/orchestrate` |',
-    '| Build a UI component | `/component`, then `/a11y` + `/responsive` |',
-    '| Frontend quality | `/a11y`, `/responsive`, `/web-vitals`, `/state` |',
-    ...(stack && stack.mobile ? ['| Mobile work | `/mobile`, `/mobile-release` |'] : []),
-    '| Use a third-party API | `/api-scout` (choose) → `/integrate` (build) → `/webhook` (inbound) |',
-    '| Keep integrations current | `/api-refresh` |',
-    '| Debug an issue | `/debug` (code) or `/investigate` (any anomaly) |',
-    '| Review code | `/review` (local diff) or `/pr-review` (pull request) |',
-    '| Security audit | `/security-review` (diff) or `/cso` (full codebase) |',
-    '| QA a web app | `/qa` |',
-    '| Run tests / build | `/test`, `/build` |',
-    '| Design work | `/design-system`, `/design-variants`, `/design-review` |',
-    '| CI/CD, containers, server, git | `/cicd`, `/docker`, `/nginx`, `/git` |',
-    '| Ship & deploy | `/ship`, `/deploy`, `/canary` |',
-    '| Docs, diagrams, PDF | `/document`, `/diagram`, `/make-pdf` |',
-    '| Knowledge & memory | `/learn`, `/decisions`, `/context-save`, `/context-restore` |',
-    '| Health & retro | `/health`, `/retro` |',
+    ...routingRows
+      .filter(([cmds]) => cmds.some((c) => installedCommands.has(c)))
+      .map(([, row]) => row),
     '',
     stackLine,
     '',
@@ -499,10 +511,10 @@ function buildSkillRoutingBlock(stack, installedRules) {
   ].join('\n');
 }
 
-function upsertClaudeMd(stack, installedRules, counts) {
+function upsertClaudeMd(stack, installedRules, installedCommands, counts) {
   heading('CLAUDE.md');
   const claudeMdPath = path.join(CWD, 'CLAUDE.md');
-  const block = buildSkillRoutingBlock(stack, installedRules);
+  const block = buildSkillRoutingBlock(stack, installedRules, installedCommands);
 
   if (!fs.existsSync(claudeMdPath)) {
     if (FLAG_DRY) {
@@ -601,6 +613,16 @@ function findSkillSource(name) {
     const p = path.join(SKILLS_DIR, sub, `${name}.md`);
     if (fs.existsSync(p)) return { src: p, sub };
   }
+  // Stack-aware categories live in templates/<name>/ — resolve the variant that
+  // matches this project so `add component` works like `init` would have.
+  const catDir = path.join(TEMPLATES_DIR, name);
+  if (fs.existsSync(catDir) && fs.statSync(catDir).isDirectory()) {
+    const variant = resolveTemplateVariant(name, detectStack());
+    if (variant) {
+      return { src: path.join(catDir, variant), sub: 'commands', variant: `${name}/${variant}` };
+    }
+    return { unavailable: true };
+  }
   return null;
 }
 
@@ -612,8 +634,15 @@ function cmdAdd(names, counts) {
       log(SYM.err, `${name}  (not found in kit — run \`list\` to see available skills)`);
       continue;
     }
+    if (found.unavailable) {
+      log(SYM.skip, `${name}  (stack-aware skill with no variant for this project)`);
+      continue;
+    }
     const dest = path.join(CWD, '.claude', found.sub, `${name}.md`);
-    counts.track(installFile(found.src, dest, `.claude/${found.sub}/${name}.md`));
+    const label = found.variant
+      ? `.claude/${found.sub}/${name}.md  ${SYM.arrow}  ${found.variant}`
+      : `.claude/${found.sub}/${name}.md`;
+    counts.track(installFile(found.src, dest, label));
   }
 }
 
@@ -673,6 +702,7 @@ function cmdInit() {
         fs.statSync(path.join(TEMPLATES_DIR, d)).isDirectory())
     : [];
   const templateInstalled = new Set();
+  const installedCommands = new Set();
 
   heading('Installing stack-aware skills');
   for (const cat of templateCategories) {
@@ -691,6 +721,7 @@ function cmdInit() {
     const label = `.claude/commands/${cat}.md  ${SYM.arrow}  ${cat}/${variant}`;
     counts.track(installFile(src, dest, label));
     templateInstalled.add(cat);
+    installedCommands.add(cat);
   }
 
   // ── 3. Generic skills, filtered by profile ───────────────────────────────
@@ -717,6 +748,7 @@ function cmdInit() {
       const dest = path.join(CWD, '.claude', sub, relFile);
       counts.track(installFile(src, dest, `.claude/${sub}/${relFile}`));
       if (sub === 'rules') installedRules.push(name);
+      if (sub === 'commands') installedCommands.add(name);
     }
   }
 
@@ -739,7 +771,7 @@ function cmdInit() {
   }
 
   // ── 5. CLAUDE.md ─────────────────────────────────────────────────────────
-  upsertClaudeMd(stack, installedRules, counts);
+  upsertClaudeMd(stack, installedRules, installedCommands, counts);
 
   // ── 6. Summary ───────────────────────────────────────────────────────────
   heading('Summary');

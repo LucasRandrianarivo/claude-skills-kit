@@ -31,6 +31,20 @@ Always: **test before reload.** `nginx -t` is not optional, and a config that fa
 ## Phase 2: The blocks that matter
 
 **Reverse proxy (app upstream)**
+
+The `map` goes in the `http` block, once per server — `$connection_upgrade` does
+not exist without it, and `nginx -t` fails with `unknown "connection_upgrade" variable`:
+```nginx
+map $http_upgrade $connection_upgrade {   # http context, not inside server/location
+    default upgrade;
+    ''      close;
+}
+
+upstream app_upstream {
+    server 127.0.0.1:3000;
+    keepalive 32;                          # without this, a new connection per request
+}
+```
 ```nginx
 location / {
     proxy_pass http://app_upstream;
@@ -45,15 +59,41 @@ location / {
     proxy_buffering on;                           # OFF for SSE/streaming responses
 }
 ```
-Use an `upstream` block with `keepalive` — without it every request opens a new connection to the app.
+`proxy_http_version 1.1` and an empty `Connection` header are what make upstream keepalive work; without both, the pool above is ignored.
 
 **SPA (static + history fallback)**
+
+`add_header` does **not** inherit: the moment a `location` declares one of its own,
+every `add_header` from the enclosing `server` block is dropped for that location.
+So security headers live in a snippet that each location re-includes:
 ```nginx
-location / { try_files $uri $uri/ /index.html; }
-location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; }
-location = /index.html { add_header Cache-Control "no-cache"; }   # never cache the shell
+# snippets/security-headers.conf
+add_header X-Content-Type-Options nosniff always;
+add_header Referrer-Policy strict-origin-when-cross-origin always;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+```
+```nginx
+server {
+    include snippets/security-headers.conf;                 # applies where no location adds its own
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    location /assets/ {                                     # hashed filenames → immutable
+        include snippets/security-headers.conf;             # re-included, or it is lost here
+        add_header Cache-Control "public, max-age=31536000, immutable" always;
+    }
+    location = /index.html {                                # the shell is never cached
+        include snippets/security-headers.conf;
+        add_header Cache-Control "no-cache" always;
+    }
+}
 ```
 Hashed assets are immutable for a year; the HTML entry point never is. Getting this backwards ships a stale app to every returning user.
+
+Verify the inheritance trap explicitly: `curl -I https://host/assets/<file>` must show the
+security headers **and** the cache directive. If the security headers are missing there,
+a nested `add_header` ate them.
 
 **Compression** — `gzip on` with `gzip_types` covering JSON/JS/CSS/SVG, `gzip_min_length 1024`, `gzip_vary on`. Add brotli if the build has the module. Never compress already-compressed formats.
 
@@ -86,7 +126,7 @@ Redirect 80 → 443 permanently, but leave `/.well-known/acme-challenge/` reacha
 | 7 | HTTP→HTTPS redirect + HSTS, ACME path exempt | Renewal breakage takes the site down at expiry |
 | 8 | Modern TLS only, OCSP stapling | Weak protocols, slow handshakes |
 | 9 | `server_tokens off`, no directory autoindex, dotfiles denied | Version fingerprinting, accidental exposure |
-| 10 | Security headers with `always` | Missing on 404/500 responses otherwise |
+| 10 | Security headers with `always`, re-included in every `location` that sets its own `add_header` | Missing on 404/500 responses, and silently dropped in nested locations |
 | 11 | Rate limits on auth and expensive endpoints | Credential stuffing, scraping |
 | 12 | `access_log` format includes upstream time and request id | Debugging a slow endpoint is guesswork otherwise |
 | 13 | Default server block returning 444/444-like for unknown hosts | Host-header abuse |
