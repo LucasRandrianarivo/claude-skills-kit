@@ -1,0 +1,122 @@
+---
+description: Nginx configuration — reverse proxy, TLS, caching, compression, security headers, rate limiting, SPA/SSR routing
+argument-hint: "[--audit] [--proxy <upstream>] [--spa] [--ssr] [--tls]"
+---
+
+# /nginx — Nginx Configuration & Audit
+
+## Usage
+```
+/nginx --audit             — audit the existing config, report and fix
+/nginx --proxy localhost:3000  — reverse proxy in front of an app server
+/nginx --spa               — static SPA hosting with history fallback
+/nginx --ssr               — proxy an SSR app with correct caching
+/nginx --tls               — TLS/HTTPS hardening only
+```
+
+## Overview
+Nginx sits between every user and your app: a wrong line here breaks WebSockets, caches a logged-in user's page for everyone, leaks your version, or silently drops uploads at 1MB. This skill writes and audits that config against what the app actually is.
+
+Always: **test before reload.** `nginx -t` is not optional, and a config that fails to reload takes the site down.
+
+---
+
+## Phase 1: Establish the target
+
+1. Find the config: `/etc/nginx/nginx.conf`, `sites-available/`, `conf.d/`, a Docker `nginx.conf`, or a Helm/compose mount. In containers, the config is in the repo — treat it as code.
+2. Identify what's being served: static SPA · SSR app (Next/Nuxt/Remix) · API upstream · mixed · file uploads · WebSockets/SSE · long-polling.
+3. Note the TLS source: certbot/Let's Encrypt, a cloud LB terminating TLS upstream, or a mounted cert.
+4. Note whether Nginx is behind another proxy (CDN, cloud LB) — that changes the real-IP and forwarded-header handling.
+
+## Phase 2: The blocks that matter
+
+**Reverse proxy (app upstream)**
+```nginx
+location / {
+    proxy_pass http://app_upstream;
+    proxy_http_version 1.1;                       # keepalive + WebSocket support
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;   # or the app builds http:// URLs
+    proxy_set_header Upgrade           $http_upgrade;   # WebSockets
+    proxy_set_header Connection        $connection_upgrade;
+    proxy_read_timeout 60s;                       # raise only for streaming/SSE
+    proxy_buffering on;                           # OFF for SSE/streaming responses
+}
+```
+Use an `upstream` block with `keepalive` — without it every request opens a new connection to the app.
+
+**SPA (static + history fallback)**
+```nginx
+location / { try_files $uri $uri/ /index.html; }
+location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; }
+location = /index.html { add_header Cache-Control "no-cache"; }   # never cache the shell
+```
+Hashed assets are immutable for a year; the HTML entry point never is. Getting this backwards ships a stale app to every returning user.
+
+**Compression** — `gzip on` with `gzip_types` covering JSON/JS/CSS/SVG, `gzip_min_length 1024`, `gzip_vary on`. Add brotli if the build has the module. Never compress already-compressed formats.
+
+**Uploads & limits** — `client_max_body_size` set to what the app actually accepts (the default 1MB silently 413s), plus matching timeouts for slow clients.
+
+**TLS**
+```nginx
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_prefer_server_ciphers off;
+ssl_session_cache shared:SSL:10m;
+ssl_stapling on; ssl_stapling_verify on;
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+```
+Redirect 80 → 443 permanently, but leave `/.well-known/acme-challenge/` reachable over HTTP or renewals break.
+
+**Security headers** (`always`, so they apply to error responses too): `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `X-Frame-Options`/`frame-ancestors`, a CSP appropriate to the app, `Permissions-Policy`. Plus `server_tokens off`.
+
+**Rate limiting** — `limit_req_zone` on auth/login/API paths with a `burst` and `nodelay`; `limit_conn` against connection floods. Set limits above real usage, then watch the 429s.
+
+## Phase 3: Audit checklist
+
+| # | Check | Why it matters |
+|---|---|---|
+| 1 | `proxy_set_header Host`/`X-Forwarded-*` present | Redirects, absolute URLs and rate limiting by IP all break without them |
+| 2 | `Upgrade`/`Connection` headers | WebSockets/HMR fail silently |
+| 3 | `proxy_buffering off` on SSE/streaming routes | Streamed responses arrive all at once, or never |
+| 4 | `client_max_body_size` matches the app | Uploads 413 at 1MB by default |
+| 5 | Cache-Control split (immutable assets vs no-cache HTML) | Stale app shells for returning users |
+| 6 | No caching of authenticated responses | Cross-user data leak — the worst failure mode here |
+| 7 | HTTP→HTTPS redirect + HSTS, ACME path exempt | Renewal breakage takes the site down at expiry |
+| 8 | Modern TLS only, OCSP stapling | Weak protocols, slow handshakes |
+| 9 | `server_tokens off`, no directory autoindex, dotfiles denied | Version fingerprinting, accidental exposure |
+| 10 | Security headers with `always` | Missing on 404/500 responses otherwise |
+| 11 | Rate limits on auth and expensive endpoints | Credential stuffing, scraping |
+| 12 | `access_log` format includes upstream time and request id | Debugging a slow endpoint is guesswork otherwise |
+| 13 | Default server block returning 444/444-like for unknown hosts | Host-header abuse |
+| 14 | Real IP from the upstream proxy (`set_real_ip_from`, `real_ip_header`) | Every client looks like the CDN otherwise |
+| 15 | `worker_connections`/file limits sized for expected concurrency | Silent connection refusals under load |
+
+## Phase 4: Apply & verify
+
+1. Write the change; keep a copy of the previous config.
+2. `nginx -t` — **never** reload on a failed test.
+3. `nginx -s reload` (or the container's reload path).
+4. Verify from outside: `curl -I https://host` for headers and cache directives, an upload at the size limit, a WebSocket handshake, an SSE stream, a 404 (headers still present?), and `curl -H "Host: unknown"` for the default server.
+5. Check the error log after the first real traffic.
+
+## Phase 5: Report
+
+```
+## Nginx Audit — <site>
+
+Config: <files>   Serves: <SPA | SSR | API | mixed>   TLS: <source>
+| # | Severity | Directive/Block | Issue | Fix |
+|---|----------|-----------------|-------|-----|
+| 1 | 🔴 | location / | proxy_cache on an authenticated route, no Vary/bypass | bypass cache when a session cookie is present |
+
+nginx -t: ✓   Reload: ✓   External checks: headers ✓ upload ✓ websocket ✓
+```
+
+## Rules
+- `nginx -t` before every reload, no exceptions.
+- Never cache a response that depends on a session; a wrong cache key here leaks one user's data to another.
+- Never disable TLS verification or downgrade protocols to make a client work — fix the client.
+- Config lives in version control when the deployment allows it; a hand-edited server is a config nobody can restore.
+- Changes go through staging first when a staging environment exists.

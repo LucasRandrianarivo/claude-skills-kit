@@ -1,6 +1,6 @@
 # claude-skills-kit
 
-The complete skills kit for [Claude Code](https://claude.ai/code) — **40+ production-ready commands, subagents, and rules** covering the full dev lifecycle: spec → plan reviews → code → debug → QA → review → security → ship → deploy → retro. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
+The complete skills kit for [Claude Code](https://claude.ai/code) — **65+ production-ready commands, 19 subagents and 7 rules** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, API integration, CI/CD, Docker, Nginx, git, ship & deploy. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
 
 ![npx claude-skills-kit init — stack detection and skill installation demo](https://raw.githubusercontent.com/LucasRandrianarivo/claude-skills-kit/main/docs/demo.gif)
 
@@ -10,7 +10,7 @@ The complete skills kit for [Claude Code](https://claude.ai/code) — **40+ prod
 npx claude-skills-kit init
 ```
 
-The installer detects your stack (Next.js, Remix, Astro, SvelteKit, Nuxt, Angular, Vue, React+Vite, NestJS, Fastify, Express — plus Python/Go/Rust projects) and installs the right variant of each stack-aware skill, with a generic fallback so **no stack is ever left without a skill**.
+The installer detects your stack (Next.js, Remix, Astro, SvelteKit, Nuxt, Angular, Vue, React+Vite, NestJS, Fastify, Express, Expo/React Native/Flutter, GitHub Actions/GitLab CI — plus Python/Go/Rust projects) and installs the right variant of each stack-aware skill, with a generic fallback so **no stack is ever left without a skill**.
 
 ```bash
 npx claude-skills-kit list                          # browse the full catalog
@@ -25,8 +25,19 @@ npx claude-skills-kit update                       # refresh installed skills
 ```
  idea ──▶ /spec ──▶ /autoplan ──▶ /feat ──▶ /review ──▶ /ship ──▶ /deploy ──▶ /canary ──▶ /retro
                 (4 plan reviews)     │    (+ /pr-review
-                                     ▼      specialists)
+                                     ▼      10 specialists)
                              /debug /test /build /qa
+```
+
+…and the project-mode arc on top of it, when the work is a whole project rather than a change:
+
+```
+/project start
+     │
+/brainstorm ─▶ /cdc ─▶ /roadmap ─▶ /exec-plan ─▶ build ─▶ /validate ─▶ /delivery
+   options      spec     phases       steps    (the loop   recette     handover
+                                                 above)
+     └── gate 0 ──── gate 1 ──── gate 2 ──── phase gates ──── gate 3 ──┘
 ```
 
 ## What you get
@@ -79,6 +90,61 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/devex-review` | Live DX audit of your own project: follow the README literally, log every friction point, score it |
 | `/health` | Code-quality dashboard: churn hotspots, dependency freshness, debt, dead files — with trend vs last run |
 
+### Project mode — idea to delivery
+
+| Command | What it does |
+|---|---|
+| `/project` | The thread through a whole project: persistent state in `.claude/project/<slug>/`, the right skill at every step, gates you decide |
+| `/brainstorm` | Structured ideation: frame → diverge (8 lenses incl. *do nothing*, *buy*, *manual first*) → challenge → score → one recommendation with its riskiest assumption |
+| `/cdc` | Cahier des charges: scope & non-scope, testable F-xx/N-xx requirements, acceptance criteria, deliverables, planning, budget, risks — versioned, with amendments |
+| `/roadmap` | Phases, milestones, dependencies, critical path and a **capacity check** with the productivity assumption shown |
+| `/exec-plan` | A phase → ordered ≤1-day tasks with done criteria, owners, parallelism and a binary gate (optionally emitted as GitHub/GitLab issues) |
+| `/validate` | Acceptance (recette) against the CDC requirement by requirement, S1–S4 defect grid, ACCEPTED / WITH RESERVES / REFUSED verdict |
+| `/delivery` | Handover: docs verified by execution, runbook, access transfer, credential rotation, training, warranty terms, sign-off |
+
+### Fullstack & agent orchestration
+
+| Command | What it does |
+|---|---|
+| `/fullstack` | Contract-first feature across db → api → client: freeze the contract, build layers **in parallel** with hard file boundaries, amend only through a gate, verify the seam at runtime |
+| `/contract` | The API contract itself: define, freeze, version, generate types/clients/mocks from it, and detect drift (`--check`) |
+| `/orchestrate` | Controlled fan-out for wide work: DAG → waves with no file overlap, dispatch specs, per-wave verification, boundary-breach handling, cost reported at each gate |
+
+### Frontend
+
+| Command | What it does |
+|---|---|
+| `/component` | A production component in your idiom — designed API, **all five states**, a11y built in, tests (React / Vue / Svelte variants + generic) |
+| `/a11y` | WCAG 2.2 AA audit: automated pass **plus** the keyboard, screen-reader, contrast and zoom passes automation can't do — then fixes and re-verifies |
+| `/responsive` | 320px → 4K, landscape, 200%/400% zoom: overflow hunting, fluid type, container queries, touch targets, content parity |
+| `/web-vitals` | LCP/INP/CLS + bundle budget: measure (median of 3, throttled), **attribute the cause**, fix, re-measure, then set a budget CI can enforce |
+| `/state` | The state layer: server vs client vs URL vs form state, cache keys, invalidation, effect chains, races — audit or design (`--design`) |
+
+### Mobile
+
+| Command | What it does |
+|---|---|
+| `/mobile` | A screen/feature built for mobile reality: offline, permissions denied, cold start, safe areas, font scale, platform parity (React Native / Expo / Flutter variants + generic) |
+| `/mobile-release` | Store release: OTA-or-build decision, version/build numbers, signing, **upgrade-from-previous test**, staged rollout, and the rollback move decided up front |
+
+### APIs — integrate anything, keep it current
+
+| Command | What it does |
+|---|---|
+| `/api-scout` | Find and evaluate the public APIs that serve a need — registries, cloud-native, open-source self-host, open data — scored on cost, limits, freshness, lock-in, with cited sources |
+| `/integrate` | Integrate any third-party API: auth (key/OAuth2/HMAC), typed boundary, timeouts, retries with jitter, idempotency, rate limiting, pagination, secrets, fixtures — no live-vendor tests |
+| `/webhook` | Inbound webhooks done right: raw-body signature verification, replay window, dedupe by unique constraint, async processing, ordering, DLQ (`--audit` for existing ones) |
+| `/api-refresh` | Freshness pass: inventory every integration, fetch **live** changelogs/deprecations, match them against your call sites, and produce a sunset-ordered migration plan |
+
+### Platform — CI/CD, containers, server, git
+
+| Command | What it does |
+|---|---|
+| `/cicd` | Pipeline audit & build — coverage, caching, permissions/OIDC, deploy gates (GitHub Actions / GitLab CI variants + generic) |
+| `/docker` | Multi-stage Dockerfile & compose: cache-correct layer order, non-root, no secrets in layers, healthchecks, signals, size and scan report |
+| `/nginx` | Reverse proxy, TLS, caching (never an authenticated response), compression, security headers, rate limiting, SPA/SSR routing — `nginx -t` before every reload |
+| `/git` | The dangerous operations with rails: conflicts, history cleanup, bisect, recovery via reflog, safe undo per situation, GitHub/GitLab flows |
+
 ### Ship & operate
 
 | Command | What it does |
@@ -116,6 +182,15 @@ Core agents — used by `/feat`, `/review`, `/build`:
 | `test-runner` | Execute tests, diagnose failures |
 | `scaffolder` | Generate files following project conventions |
 
+Fullstack agents — used by `/fullstack` and `/contract`, each with a **hard file boundary**:
+
+| Agent | Owns | May not touch |
+|---|---|---|
+| `contract-keeper` | The contract artifact, its versions and amendments | Implementation code |
+| `backend-builder` | Migrations, models, handlers, services, backend tests | Client code, the contract |
+| `frontend-builder` | Routes, components, state, mocks, client tests | Server code, the contract |
+| `integration-verifier` | Runtime verification of the seam (read-only on code) | Anything — it reports, never patches |
+
 Specialist reviewers — dispatched automatically by `/pr-review` based on what the diff touches:
 
 | Specialist | Triggers on |
@@ -127,6 +202,9 @@ Specialist reviewers — dispatched automatically by `/pr-review` based on what 
 | `specialist-data-migration` | Migrations: reversibility, locks, data loss, deploy ordering |
 | `specialist-maintainability` | Complexity, coupling, conventions |
 | `specialist-testing` | Coverage of changed behavior, test quality, missing edge cases |
+| `specialist-accessibility` | Any interactive markup: semantics, keyboard, focus, names, contrast (WCAG 2.2 AA) |
+| `specialist-frontend-perf` | Bundle growth, render cost, LCP/INP/CLS impact of a change |
+| `specialist-integration` | Third-party calls: timeouts, retries, idempotency, secrets, webhook verification |
 
 ### Rules (always active)
 
@@ -170,19 +248,27 @@ Then in any session: `/rag index docs/`, `/rag search "how does pricing work"`, 
 Install only what you need — combine groups freely:
 
 ```bash
-npx claude-skills-kit init --profile core            # the essential v1 set
-npx claude-skills-kit init --profile core,ship,plan  # + ship & plan reviews
-npx claude-skills-kit init                           # full (default)
+npx claude-skills-kit init --profile core                  # the essential v1 set
+npx claude-skills-kit init --profile core,ship,plan        # + ship & plan reviews
+npx claude-skills-kit init --profile core,frontend,api     # frontend + integrations
+npx claude-skills-kit init --profile project,agentic       # run a whole project
+npx claude-skills-kit init                                 # full (default)
 ```
 
 | Group | Contents |
 |---|---|
 | `core` | feat, review, compact, simplify, security-review, fix-review + stack-aware debug/test/build/design-review/scaffolder |
 | `plan` | spec, the 4 plan reviews, autoplan, office-hours |
+| `project` | project, brainstorm, cdc, roadmap, exec-plan, validate, delivery |
+| `agentic` | fullstack, contract, orchestrate |
+| `frontend` | a11y, responsive, web-vitals, state + stack-aware component |
+| `mobile` | mobile-release + stack-aware mobile (installed only for a mobile project) |
+| `api` | api-scout, integrate, webhook, api-refresh |
+| `platform` | nginx, docker, git + stack-aware cicd |
 | `ship` | ship, deploy, canary, release-notes, retro, pr-review |
 | `quality` | qa, health, benchmark, devex-review, cso, investigate |
 | `design` | design-system, design-variants, design-html |
-| `knowledge` | learn, decisions, context-save/restore, document, diagram, make-pdf, scrape, skillify |
+| `knowledge` | learn, decisions, context-save/restore, document, diagram, make-pdf, scrape, skillify, rag, adr |
 | `guard` | freeze, guard, redact, decisions rules |
 
 ## Stack detection
@@ -192,6 +278,8 @@ The installer reads your project files and picks the right template variant:
 | Signal | Detected |
 |---|---|
 | `package.json` deps | Next.js (App/Pages router), Remix, Astro, SvelteKit, Nuxt, Angular, React+Vite, Vue+Vite, NestJS, Fastify, Hono, Express |
+| `expo`, `react-native`, `pubspec.yaml` | Expo / React Native / Flutter → the matching `/mobile` and `/component` variants |
+| `.github/workflows`, `.gitlab-ci.yml`, Jenkinsfile, CircleCI, Bitbucket, Azure | CI provider → the matching `/cicd` variant |
 | UI libraries | antd, Tailwind, shadcn (`components.json`), Chakra, MUI, Bootstrap |
 | Test tooling | Vitest, Jest, Mocha + Playwright/Cypress (e2e) |
 | Lockfiles | bun / pnpm / yarn / npm |
@@ -205,11 +293,13 @@ Unknown stack? Every stack-aware category has a `generic.md` fallback that disco
 ```
 your-project/
 ├── .claude/
-│   ├── commands/          ← all slash commands (42 in full profile)
-│   ├── agents/            ← 12 subagents with proper frontmatter
+│   ├── commands/          ← all slash commands (up to 69 in full profile)
+│   ├── agents/            ← 19 subagents with proper frontmatter
 │   ├── rules/             ← 7 rules, imported by CLAUDE.md
 │   ├── context/           ← saved working contexts (/context-save)
-│   ├── reports/           ← QA, health, retro, benchmark, security reports
+│   ├── project/           ← project-mode state: cdc.md, roadmap.md, exec-*.md, validation-*
+│   ├── contracts/         ← frozen API contracts (/contract, /fullstack)
+│   ├── reports/           ← QA, health, retro, benchmark, web-vitals, api-refresh reports
 │   ├── learnings.jsonl    ← bug & fix knowledge base
 │   └── decisions.jsonl    ← decision log
 └── CLAUDE.md              ← managed skill-routing block (refreshed in place)

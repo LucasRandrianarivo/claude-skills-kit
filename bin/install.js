@@ -68,6 +68,33 @@ const GROUPS = {
     'learn', 'decisions', 'context-save', 'context-restore',
     'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag', 'adr',
   ],
+  frontend: [
+    'a11y', 'web-vitals', 'responsive', 'state',
+  ],
+  agentic: [
+    'fullstack', 'contract', 'orchestrate',
+  ],
+  api: [
+    'api-scout', 'integrate', 'webhook', 'api-refresh',
+  ],
+  platform: [
+    'nginx', 'docker', 'git',
+  ],
+  mobile: [
+    'mobile-release',
+  ],
+  project: [
+    'project', 'brainstorm', 'cdc', 'roadmap', 'exec-plan', 'validate', 'delivery',
+  ],
+};
+
+// Stack-aware template categories that belong to a profile group. Categories
+// absent from this map (debug, test, build, design-review, scaffolder) are
+// installed for every profile.
+const TEMPLATE_GROUPS = {
+  component: 'frontend',
+  cicd: 'platform',
+  mobile: 'mobile',
 };
 
 const RULE_GROUPS = {
@@ -79,12 +106,16 @@ function resolveProfile(profile) {
   const parts = profile.split(',').map((p) => p.trim()).filter(Boolean);
   const commands = new Set();
   const rules = new Set();
+  const groups = new Set();
 
   for (const part of parts) {
     if (part === 'full') {
+      Object.keys(GROUPS).forEach((g) => groups.add(g));
+      Object.keys(RULE_GROUPS).forEach((g) => groups.add(g));
       Object.values(GROUPS).forEach((g) => g.forEach((c) => commands.add(c)));
       Object.values(RULE_GROUPS).forEach((g) => g.forEach((r) => rules.add(r)));
     } else if (GROUPS[part] || RULE_GROUPS[part]) {
+      groups.add(part);
       (GROUPS[part] || []).forEach((c) => commands.add(c));
       (RULE_GROUPS[part] || []).forEach((r) => rules.add(r));
     } else {
@@ -96,7 +127,8 @@ function resolveProfile(profile) {
 
   // Core rules are always active — every profile gets them.
   RULE_GROUPS.core.forEach((r) => rules.add(r));
-  return { commands, rules };
+  groups.add('core');
+  return { commands, rules, groups };
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -183,7 +215,20 @@ function detectStack() {
     typescript: exists('tsconfig.json'),
     packageManager: null,
     monorepo: false,
+    mobile: null,
+    ci: null,
   };
+
+  // ── CI provider (independent of the language ecosystem) ────────────────────
+  if (exists('.github/workflows')) stack.ci = 'github-actions';
+  else if (exists('.gitlab-ci.yml')) stack.ci = 'gitlab-ci';
+  else if (exists('Jenkinsfile')) stack.ci = 'jenkins';
+  else if (exists('.circleci/config.yml')) stack.ci = 'circleci';
+  else if (exists('bitbucket-pipelines.yml')) stack.ci = 'bitbucket';
+  else if (exists('azure-pipelines.yml')) stack.ci = 'azure';
+
+  // ── Flutter (no package.json) ──────────────────────────────────────────────
+  if (exists('pubspec.yaml')) stack.mobile = 'flutter';
 
   // ── Package manager (lockfiles) ────────────────────────────────────────────
   if (exists('bun.lock') || exists('bun.lockb')) stack.packageManager = 'bun';
@@ -209,6 +254,9 @@ function detectStack() {
       stack.test = 'cargo-test';
     } else if (exists('composer.json')) {
       stack.language = 'php';
+    } else if (stack.mobile === 'flutter') {
+      stack.language = 'dart';
+      stack.test = 'flutter-test';
     }
     return stack;
   }
@@ -260,6 +308,15 @@ function detectStack() {
     stack.framework = 'express';
   } else {
     stack.framework = 'node';
+  }
+
+  // ── Mobile ─────────────────────────────────────────────────────────────────
+  if (has('expo')) {
+    stack.mobile = 'expo';
+    if (!has('next')) stack.framework = 'expo';
+  } else if (has('react-native')) {
+    stack.mobile = 'react-native';
+    if (!has('next')) stack.framework = 'react-native';
   }
 
   // ── UI library ─────────────────────────────────────────────────────────────
@@ -337,6 +394,34 @@ function resolveTemplateVariant(category, stack) {
       return pickVariant(category, candidates);
     }
 
+    case 'component': {
+      const candidates = [];
+      if (['next', 'remix', 'react-vite', 'astro', 'react-native', 'expo'].includes(stack.framework)) {
+        candidates.push('react.md');
+      }
+      if (['nuxt', 'vue-vite'].includes(stack.framework)) candidates.push('vue.md');
+      if (stack.framework === 'sveltekit') candidates.push('svelte.md');
+      if (stack.mobile === 'flutter') return null;   // Flutter widgets live in /mobile
+      return pickVariant(category, candidates);
+    }
+
+    case 'cicd': {
+      const candidates = [];
+      if (stack.ci === 'github-actions') candidates.push('github-actions.md');
+      if (stack.ci === 'gitlab-ci') candidates.push('gitlab-ci.md');
+      return pickVariant(category, candidates);
+    }
+
+    case 'mobile': {
+      // Mobile-only: no variant (not even generic) for a non-mobile project.
+      if (!stack.mobile) return null;
+      const candidates = [];
+      if (stack.mobile === 'expo') candidates.push('expo.md');
+      if (stack.mobile === 'react-native') candidates.push('react-native.md');
+      if (stack.mobile === 'flutter') candidates.push('flutter.md');
+      return pickVariant(category, candidates);
+    }
+
     case 'scaffolder': {
       const candidates = [];
       if (stack.framework === 'next') {
@@ -374,20 +459,31 @@ function buildSkillRoutingBlock(stack, installedRules) {
     ROUTING_START,
     '## Skill routing (claude-skills-kit)',
     '',
-    'This project uses **claude-skills-kit** — structured skills for the full dev',
-    'lifecycle: spec, plan reviews, coding, debugging, QA, review, ship, deploy.',
+    'This project uses **claude-skills-kit** — structured skills for the whole job:',
+    'project mode (brainstorm → cahier des charges → roadmap → execution → acceptance',
+    '→ delivery), fullstack orchestration, frontend, mobile, API integration, CI/CD,',
+    'containers, git, review, ship and deploy.',
     '',
     '| When the user wants to | Use |',
     '| --- | --- |',
+    '| Run a whole project (idea → delivery) | `/project` (then `/brainstorm`, `/cdc`, `/roadmap`, `/exec-plan`, `/validate`, `/delivery`) |',
     '| Turn an idea into a spec | `/spec` |',
     '| Review a plan before building | `/autoplan` (or `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) |',
-    '| Build a feature end-to-end | `/feat` |',
+    '| Build a feature end-to-end | `/feat` (one layer) or `/fullstack` (db + api + client, contract-first) |',
+    '| Agree an API shape between layers | `/contract` |',
+    '| Run wide repetitive work with many agents | `/orchestrate` |',
+    '| Build a UI component | `/component`, then `/a11y` + `/responsive` |',
+    '| Frontend quality | `/a11y`, `/responsive`, `/web-vitals`, `/state` |',
+    ...(stack && stack.mobile ? ['| Mobile work | `/mobile`, `/mobile-release` |'] : []),
+    '| Use a third-party API | `/api-scout` (choose) → `/integrate` (build) → `/webhook` (inbound) |',
+    '| Keep integrations current | `/api-refresh` |',
     '| Debug an issue | `/debug` (code) or `/investigate` (any anomaly) |',
     '| Review code | `/review` (local diff) or `/pr-review` (pull request) |',
     '| Security audit | `/security-review` (diff) or `/cso` (full codebase) |',
     '| QA a web app | `/qa` |',
     '| Run tests / build | `/test`, `/build` |',
     '| Design work | `/design-system`, `/design-variants`, `/design-review` |',
+    '| CI/CD, containers, server, git | `/cicd`, `/docker`, `/nginx`, `/git` |',
     '| Ship & deploy | `/ship`, `/deploy`, `/canary` |',
     '| Docs, diagrams, PDF | `/document`, `/diagram`, `/make-pdf` |',
     '| Knowledge & memory | `/learn`, `/decisions`, `/context-save`, `/context-restore` |',
@@ -490,8 +586,13 @@ function cmdList() {
   console.log(`  full (default) — everything`);
   console.log(`  core — the essential v1 set`);
   for (const g of Object.keys(GROUPS).filter((g) => g !== 'core')) {
-    console.log(`  ${g} — ${GROUPS[g].map((c) => `/${c}`).join(' ')}`);
+    const templates = Object.keys(TEMPLATE_GROUPS)
+      .filter((cat) => TEMPLATE_GROUPS[cat] === g)
+      .map((cat) => `/${cat}*`);
+    const names = GROUPS[g].map((c) => `/${c}`).concat(templates);
+    console.log(`  ${g} — ${names.join(' ')}`);
   }
+  console.log('  * stack-aware: installed as the variant matching your project');
   console.log('\n  Combine groups: npx claude-skills-kit init --profile core,ship,quality\n');
 }
 
@@ -554,6 +655,8 @@ function cmdInit() {
   log(SYM.arrow, `Framework:  ${stack.framework || '—'}${stack.nextRouterVariant ? ` (${stack.nextRouterVariant} router)` : ''}`);
   log(SYM.arrow, `UI library: ${stack.ui}`);
   log(SYM.arrow, `Tests:      ${stack.test || 'not detected'}${stack.e2e ? ` + ${stack.e2e}` : ''}`);
+  log(SYM.arrow, `Mobile:     ${stack.mobile || '—'}`);
+  log(SYM.arrow, `CI:         ${stack.ci || 'not detected'}`);
   log(SYM.arrow, `Pkg mgr:    ${stack.packageManager || 'not detected'}${stack.monorepo ? '  (monorepo)' : ''}`);
 
   const counts = { installed: 0, skipped: 0, dry: 0, warned: 0 };
@@ -573,6 +676,11 @@ function cmdInit() {
 
   heading('Installing stack-aware skills');
   for (const cat of templateCategories) {
+    const catGroup = TEMPLATE_GROUPS[cat];
+    if (catGroup && !profile.groups.has(catGroup)) {
+      log(SYM.skip, `${cat}  (not in profile "${FLAG_PROFILE}")`);
+      continue;
+    }
     const variant = resolveTemplateVariant(cat, stack);
     if (!variant) {
       log(SYM.skip, `${cat}  (no matching variant for this stack)`);
