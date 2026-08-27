@@ -18,6 +18,8 @@ Technical SEO is not content strategy — it's making sure a crawler can **reach
 
 It stops at the technical boundary: keyword and content decisions belong to the people who know the market.
 
+Field notes: `.claude/references/http.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Establish how pages are rendered

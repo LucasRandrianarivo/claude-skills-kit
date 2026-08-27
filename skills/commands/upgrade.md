@@ -18,6 +18,8 @@ argument-hint: "<dependency or framework> [--assess] [--plan] [--apply] [--all]"
 
 Iron rule: **one dependency per branch, one major per step.** A PR that bumps twelve packages fails for an unattributable reason and gets abandoned.
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1 (`--assess`): What's actually urgent

@@ -17,6 +17,8 @@ argument-hint: "[route or component] [--report-only] [--widths 320,768,1440]"
 ## Overview
 "Responsive" is not "it has breakpoints". It's: no horizontal scroll at 320px, no orphaned layout at 2560px, text that stays readable at 200% zoom, tap targets a thumb can hit, and no content that only exists on desktop. This skill checks all of that against **the project's own scale** (Tailwind breakpoints, MUI theme, custom tokens) rather than inventing new numbers.
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Learn the project's scale

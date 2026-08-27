@@ -1,6 +1,6 @@
 # claude-skills-kit
 
-The complete skills kit for [Claude Code](https://claude.ai/code) — **75+ production-ready commands, 20 subagents and 8 rules** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, API integration, CI/CD, Docker, Nginx, git, observability, incidents, GDPR, ship & deploy. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
+The complete skills kit for [Claude Code](https://claude.ai/code) — **88 production-ready commands, 20 subagents, 9 rules and 10 domain field-note references** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, jobs, cache, search, realtime, AI features, API integration, CI/CD, Kubernetes, Terraform, Nginx, git, observability, incidents, GDPR, ship & deploy. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
 
 ![npx claude-skills-kit init — stack detection and skill installation demo](https://raw.githubusercontent.com/LucasRandrianarivo/claude-skills-kit/main/docs/demo.gif)
 
@@ -172,6 +172,35 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/testing` | Test **strategy**: the level each behavior belongs at, the missing negative paths, flake elimination, and every new test proven to fail first |
 | `/notifications` | Email deliverability (SPF/DKIM/DMARC, separated streams), async sending with bounce suppression, push permission timing and token lifecycle |
 
+### Backend systems
+
+| Command | What it does |
+|---|---|
+| `/jobs` | Queues done right: outbox instead of enqueue-and-hope, idempotent handlers, retryable vs terminal failures, DLQ with replay, scheduled-job locking and DST |
+| `/cache` | What to cache where, keys that encode every input, invalidation strategy, stampede protection — and the rule that a shared cache never holds identity-dependent data |
+| `/realtime` | SSE vs WebSocket vs polling, reconnection **with state recovery**, per-subscription authorization, shared bus across instances, backpressure |
+| `/search` | Engine choice (start with Postgres), outbox-fed indexing, alias-swap reindex, relevance tuned against a judgment set, permission filtering in-query |
+| `/files` | Presigned direct upload, validation on bytes not claims, re-encoded images, separate origin for user content, signed URLs — never "unguessable URL" as access control |
+| `/api-design` | The API others consume: one error envelope with machine codes, cursor pagination, idempotency keys, rate-limit headers, versioning with a sunset path |
+
+### Product engineering
+
+| Command | What it does |
+|---|---|
+| `/llm` | AI features that hold up: structured output + validation, prompt injection as an architectural problem, **evals before prompt tuning**, cost/latency levers, degraded mode |
+| `/flags` | Flags with an owner and a removal date, safe defaults, deterministic bucketing, staged rollout, and experiments whose decision rule is written before the data arrives |
+| `/analytics` | A tracking plan that answers questions, one naming convention, server-side outcomes, anonymous→user aliasing, and no PII in properties |
+| `/architecture` | Boundaries and data ownership, sync vs async, a failure table per dependency, and ADRs for the one-way doors |
+| `/refactor` | Characterization tests first, one mechanical change per commit, strangler fig for subsystem replacement — behavior never changes inside a refactor |
+
+### Infrastructure
+
+| Command | What it does |
+|---|---|
+| `/k8s` | The five things that actually break: probes (liveness never checks a dependency), resources, rollouts that drop requests, config reload, autoscaling on the wrong metric |
+| `/iac` | Terraform/OpenTofu: remote locked state, reading a plan for `destroy`/`replace` lines, module and provider pinning, drift, safe adoption of manual infra |
+| `/cost` | Attribute before optimizing, unit economics, the waste checklist, and a cut list with the risk and reversibility of each item |
+
 ### Ship & operate
 
 | Command | What it does |
@@ -245,9 +274,29 @@ Specialist reviewers — dispatched automatically by `/pr-review` based on what 
 | `learnings` | Log bugs/fixes to `.claude/learnings.jsonl`; consult them before debugging |
 | `decisions` | Auto-log significant decisions to `.claude/decisions.jsonl`; auto-escalate architecture-shaping ones into ADRs (`docs/adr/`); accepted ADRs are binding |
 | `greeting` | "Bonjour" lists all available skills dynamically |
+| `expertise` | Domain questions are answered from the field notes in `.claude/references/` — mechanism, trap, verification — never from vague recall |
 | `evidence` | No claim without proof: "tests pass", "it's fixed", "not used anywhere" require the command that was run — skipped checks are named, never rounded up |
 
 Rules are activated through `@.claude/rules/*.md` imports in the managed CLAUDE.md block, so they actually load every session.
+
+### Field notes — the expertise layer
+
+Ten dense domain references install to `.claude/references/`. They are what turns a skill from a checklist into a specialist: the mechanism, the trap that looks correct, the symptom→cause→fix table, and the numbers worth knowing.
+
+| Reference | Covers |
+|---|---|
+| `database.md` | Why a plan is chosen, index column order, reading `EXPLAIN`, isolation anomalies, migration lock profiles |
+| `frontend.md` | Rendering costs, framework reactivity traps, hydration mismatches, the CSS rules behind most layout bugs (`min-width: auto`…) |
+| `security.md` | Access control first (IDOR, mass assignment), injection by interpreter, auth traps, secrets, supply chain, LLM-specific |
+| `distributed.md` | The three outcomes of a network call, retry rules, idempotency, outbox/inbox, ordering, backpressure |
+| `http.md` | `Cache-Control` decoded, `Vary`, status codes that carry meaning, cookies, CORS without folklore, CDN behavior |
+| `devops.md` | Container layers and PID 1, the Kubernetes failure table, proxy traps, deploy strategies, zero-downtime requirements |
+| `testing.md` | Where false greens come from, what belongs at which level, the four causes of flakes |
+| `llm.md` | Reliable output, prompt injection as an architecture problem, evals, cost/latency levers, RAG failure diagnosis |
+| `mobile.md` | Process death, offline, permissions, the upgrade-path test, store review realities |
+| `architecture.md` | Coupling as the currency, monolith vs services honestly, sync/async, failure design, strangler fig |
+
+The always-active `expertise` rule maps each domain to its notes and requires answers to give the **mechanism, the trap, the verification, and what would change the answer** — read from the notes, not from memory. Live facts (pricing, versions, deprecations) are always fetched and cited.
 
 ## Local RAG — one-command semantic memory
 
@@ -281,24 +330,27 @@ npx claude-skills-kit init --profile core                  # the essential v1 se
 npx claude-skills-kit init --profile core,ship,plan        # + ship & plan reviews
 npx claude-skills-kit init --profile core,frontend,api     # frontend + integrations
 npx claude-skills-kit init --profile project,agentic       # run a whole project
-npx claude-skills-kit init --profile data,security,platform # backend & ops
+npx claude-skills-kit init --profile data,security,platform # data & ops
+npx claude-skills-kit init --profile backend,product        # services & product engineering
 npx claude-skills-kit init                                 # full (default)
 ```
 
 | Group | Contents |
 |---|---|
 | `core` | feat, review, compact, simplify, security-review, fix-review + stack-aware debug/test/build/design-review/scaffolder |
-| `plan` | spec, the 4 plan reviews, autoplan, office-hours |
+| `plan` | spec, the 4 plan reviews, autoplan, office-hours, architecture |
 | `project` | project, brainstorm, cdc, roadmap, exec-plan, validate, delivery |
 | `agentic` | fullstack, contract, orchestrate |
 | `frontend` | a11y, responsive, web-vitals, state, seo, i18n + stack-aware component |
 | `mobile` | mobile-release + stack-aware mobile (installed only for a mobile project) |
 | `api` | api-scout, integrate, webhook, api-refresh, notifications |
-| `platform` | nginx, docker, git, observability, incident, env + stack-aware cicd |
+| `platform` | nginx, docker, git, observability, incident, env, k8s, iac, cost + stack-aware cicd |
 | `data` | db, payments |
+| `backend` | jobs, cache, realtime, search, files, api-design |
+| `product` | flags, analytics, llm |
 | `security` | auth, rgpd |
 | `ship` | ship, deploy, canary, release-notes, retro, pr-review |
-| `quality` | qa, health, benchmark, devex-review, cso, investigate, testing, upgrade |
+| `quality` | qa, health, benchmark, devex-review, cso, investigate, testing, upgrade, refactor |
 | `design` | design-system, design-variants, design-html |
 | `knowledge` | learn, decisions, context-save/restore, document, diagram, make-pdf, scrape, skillify, rag, adr |
 | `guard` | freeze, guard, redact, decisions rules |
@@ -325,9 +377,10 @@ Unknown stack? Every stack-aware category has a `generic.md` fallback that disco
 ```
 your-project/
 ├── .claude/
-│   ├── commands/          ← all slash commands (up to 81 in full profile)
+│   ├── commands/          ← all slash commands (up to 94 in full profile)
 │   ├── agents/            ← 20 subagents with proper frontmatter
-│   ├── rules/             ← 8 rules, imported by CLAUDE.md
+│   ├── rules/             ← 9 rules, imported by CLAUDE.md
+│   ├── references/        ← 10 domain field notes (the expertise layer)
 │   ├── context/           ← saved working contexts (/context-save)
 │   ├── project/           ← project-mode state: cdc.md, roadmap.md, exec-*.md, validation-*
 │   ├── contracts/         ← frozen API contracts (/contract, /fullstack)

@@ -9,6 +9,7 @@ const path = require('path');
 const PKG_ROOT = path.resolve(__dirname, '..');
 const SKILLS_DIR = path.join(PKG_ROOT, 'skills');
 const TEMPLATES_DIR = path.join(PKG_ROOT, 'templates');
+const REFERENCES_DIR = path.join(PKG_ROOT, 'references');
 const CWD = process.cwd();
 
 // ── CLI parsing ────────────────────────────────────────────────────────────────
@@ -53,14 +54,14 @@ const GROUPS = {
   ],
   plan: [
     'spec', 'plan-ceo-review', 'plan-eng-review', 'plan-design-review',
-    'plan-devex-review', 'autoplan', 'office-hours',
+    'plan-devex-review', 'autoplan', 'office-hours', 'architecture',
   ],
   ship: [
     'ship', 'deploy', 'canary', 'release-notes', 'retro', 'pr-review',
   ],
   quality: [
     'qa', 'health', 'benchmark', 'devex-review', 'cso', 'investigate',
-    'testing', 'upgrade',
+    'testing', 'upgrade', 'refactor',
   ],
   design: [
     'design-system', 'design-variants', 'design-html',
@@ -80,6 +81,13 @@ const GROUPS = {
   ],
   platform: [
     'nginx', 'docker', 'git', 'observability', 'incident', 'env',
+    'k8s', 'iac', 'cost',
+  ],
+  backend: [
+    'jobs', 'cache', 'realtime', 'search', 'files', 'api-design',
+  ],
+  product: [
+    'flags', 'analytics', 'llm',
   ],
   data: [
     'db', 'payments',
@@ -105,7 +113,7 @@ const TEMPLATE_GROUPS = {
 };
 
 const RULE_GROUPS = {
-  core: ['careful', 'learnings', 'greeting', 'evidence'],
+  core: ['careful', 'learnings', 'greeting', 'evidence', 'expertise'],
   guard: ['freeze', 'guard', 'redact', 'decisions'],
 };
 
@@ -472,6 +480,7 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
     ['Review a plan before building', [['autoplan', '`/autoplan`'], ['plan-ceo-review', '`/plan-ceo-review`'], ['plan-eng-review', '`/plan-eng-review`'], ['plan-design-review', '`/plan-design-review`'], ['plan-devex-review', '`/plan-devex-review`']]],
     ['Build a feature end-to-end', [['feat', '`/feat` (one layer)'], ['fullstack', '`/fullstack` (db + api + client, contract-first)']], ' or '],
     ['Agree an API shape between layers', [['contract', '`/contract`']]],
+    ['Design the system (boundaries, failure modes)', [['architecture', '`/architecture`']]],
     ['Run wide repetitive work with many agents', [['orchestrate', '`/orchestrate`']]],
     ['Build a UI component, then audit it', [['component', '`/component`'], ['a11y', '`/a11y`'], ['responsive', '`/responsive`']]],
     ['Frontend quality', [['a11y', '`/a11y`'], ['responsive', '`/responsive`'], ['web-vitals', '`/web-vitals`'], ['state', '`/state`']]],
@@ -480,10 +489,19 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
     ['Use a third-party API', [['api-scout', '`/api-scout` (choose)'], ['integrate', '`/integrate` (build)'], ['webhook', '`/webhook` (inbound)']], ' → '],
     ['Keep integrations current', [['api-refresh', '`/api-refresh`']]],
     ['Schema, migrations, slow queries', [['db', '`/db`']]],
+    ['Background jobs & queues', [['jobs', '`/jobs`']]],
+    ['Caching', [['cache', '`/cache`']]],
+    ['Realtime / live updates', [['realtime', '`/realtime`']]],
+    ['Search', [['search', '`/search`']]],
+    ['Uploads & media', [['files', '`/files`']]],
+    ['Design an API others consume', [['api-design', '`/api-design`']]],
     ['Auth & permissions', [['auth', '`/auth`']]],
     ['Payments & billing', [['payments', '`/payments`']]],
     ['Email & push', [['notifications', '`/notifications`']]],
     ['GDPR/RGPD compliance', [['rgpd', '`/rgpd`']]],
+    ['AI / LLM features', [['llm', '`/llm`']]],
+    ['Feature flags & experiments', [['flags', '`/flags`']]],
+    ['Product analytics', [['analytics', '`/analytics`']]],
     ['Debug an issue', [['debug', '`/debug` (code)'], ['investigate', '`/investigate` (any anomaly)']], ' or '],
     ['Review code', [['review', '`/review` (local diff)'], ['pr-review', '`/pr-review` (pull request)']], ' or '],
     ['Security audit', [['security-review', '`/security-review` (diff)'], ['cso', '`/cso` (full codebase)']], ' or '],
@@ -491,12 +509,15 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
     ['Run tests / build', [['test', '`/test`'], ['build', '`/build`']]],
     ['Decide what to test, write what is missing', [['testing', '`/testing`']]],
     ['Upgrade a framework or dependency', [['upgrade', '`/upgrade`']]],
+    ['Restructure code safely', [['refactor', '`/refactor`']]],
     ['Design work', [['design-system', '`/design-system`'], ['design-variants', '`/design-variants`'], ['design-html', '`/design-html`'], ['design-review', '`/design-review`']]],
     ['CI/CD, containers, server, git', [['cicd', '`/cicd`'], ['docker', '`/docker`'], ['nginx', '`/nginx`'], ['git', '`/git`']]],
     ['Ship & deploy', [['ship', '`/ship`'], ['deploy', '`/deploy`'], ['canary', '`/canary`']]],
     ['Logs, metrics, traces, alerts', [['observability', '`/observability`']]],
     ['Production is broken right now', [['incident', '`/incident`']]],
     ['Config & secrets', [['env', '`/env`']]],
+    ['Kubernetes & infrastructure as code', [['k8s', '`/k8s`'], ['iac', '`/iac`']]],
+    ['Infrastructure cost', [['cost', '`/cost`']]],
     ['Docs, diagrams, PDF', [['document', '`/document`'], ['diagram', '`/diagram`'], ['make-pdf', '`/make-pdf`']]],
     ['Knowledge & memory', [['learn', '`/learn`'], ['decisions', '`/decisions`'], ['context-save', '`/context-save`'], ['context-restore', '`/context-restore`']]],
     ['Health & retro', [['health', '`/health`'], ['retro', '`/retro`']]],
@@ -606,6 +627,19 @@ function cmdList() {
     }
   }
 
+  heading('Field notes (installed to .claude/references/)');
+  for (const file of walkDir(REFERENCES_DIR).sort()) {
+    const name = file.replace(/\.md$/, '');
+    const h1 = (() => {
+      try {
+        const l = fs.readFileSync(path.join(REFERENCES_DIR, file), 'utf8').split('\n').find((x) => x.startsWith('# '));
+        return l ? l.replace(/^#\s*/, '') : '';
+      } catch { return ''; }
+    })();
+    console.log(`  ${SYM.arrow} ${name}`);
+    if (h1) console.log(`      ${h1}`);
+  }
+
   heading('Stack-aware templates');
   for (const cat of fs.existsSync(TEMPLATES_DIR) ? fs.readdirSync(TEMPLATES_DIR).sort() : []) {
     const variants = walkDir(path.join(TEMPLATES_DIR, cat))
@@ -633,6 +667,10 @@ function findSkillSource(name) {
     const p = path.join(SKILLS_DIR, sub, `${name}.md`);
     if (fs.existsSync(p)) return { src: p, sub };
   }
+  // Field notes live in references/<name>.md and install alongside the skills.
+  const refPath = path.join(REFERENCES_DIR, `${name}.md`);
+  if (fs.existsSync(refPath)) return { src: refPath, sub: 'references' };
+
   // Stack-aware categories live in templates/<name>/ — resolve the variant that
   // matches this project so `add component` works like `init` would have.
   const catDir = path.join(TEMPLATES_DIR, name);
@@ -769,6 +807,17 @@ function cmdInit() {
       counts.track(installFile(src, dest, `.claude/${sub}/${relFile}`));
       if (sub === 'rules') installedRules.push(name);
       if (sub === 'commands') installedCommands.add(name);
+    }
+  }
+
+  // ── 3b. Field notes (domain references consulted by the skills) ──────────
+  const referenceFiles = walkDir(REFERENCES_DIR);
+  if (referenceFiles.length > 0) {
+    heading(`Installing field notes ${SYM.arrow} .claude/references/`);
+    for (const relFile of referenceFiles.sort()) {
+      const src = path.join(REFERENCES_DIR, relFile);
+      const dest = path.join(CWD, '.claude', 'references', relFile);
+      counts.track(installFile(src, dest, `.claude/references/${relFile}`));
     }
   }
 

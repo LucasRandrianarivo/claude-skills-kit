@@ -5,6 +5,9 @@ argument-hint: "[url] [--report-only] [--quick|--exhaustive] [--regression] [sco
 
 # /qa — Systematic Web App QA (Test → Fix → Verify)
 
+Field notes: `.claude/references/testing.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
+
 ## Usage
 ```
 /qa                          — diff-aware: test pages affected by the current branch

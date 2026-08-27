@@ -18,6 +18,8 @@ Auth is the one feature where "it works" and "it's correct" are unrelated. The l
 
 **Default advice: use the ecosystem's maintained solution** (Auth.js/NextAuth, Lucia, Better Auth, Devise, Django auth, Spring Security, Supabase/Clerk/Auth0/Keycloak) rather than hand-rolling. Hand-rolled auth is where the expensive bugs live. Say so once, then work with what the project chose.
 
+Field notes: `.claude/references/security.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Map what exists

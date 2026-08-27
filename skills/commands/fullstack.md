@@ -20,6 +20,8 @@ The method: **freeze the contract first, then let each layer be built against it
 
 You stay in control at four gates. Nothing crosses a gate without your go.
 
+Field notes: `.claude/references/architecture.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Decompose (main agent)

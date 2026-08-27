@@ -5,6 +5,9 @@ argument-hint: "[files]"
 
 # /security-review — Security Audit (Phase 4)
 
+Field notes: `.claude/references/security.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
+
 ## Usage
 ```
 /security-review              — review uncommitted changes

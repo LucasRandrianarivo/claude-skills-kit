@@ -14,6 +14,8 @@ argument-hint: "<component name and behavior> [--no-test]"
 ## Overview
 Svelte makes it easy to ship a component that only handles the happy path. This skill builds the other 80%: every state designed, keyboard-operable, an API that can't be misused, and a test that proves it — in your codebase's idiom (runes or stores, whichever the neighbors use).
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the codebase first

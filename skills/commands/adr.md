@@ -5,6 +5,9 @@ argument-hint: "[new <title>|list|show <n>|status <n> <state>|from-decisions|ind
 
 # /adr — Architecture Decision Records
 
+Field notes: `.claude/references/architecture.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
+
 ## Usage
 ```
 /adr new <title>            — write a new ADR from the decision at hand

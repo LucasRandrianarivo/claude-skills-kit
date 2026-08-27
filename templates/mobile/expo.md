@@ -14,6 +14,8 @@ argument-hint: "<screen or feature> [--ios-only] [--android-only]"
 ## Overview
 Expo removes most native build friction — and adds its own rules: what works in Expo Go vs a development build, what requires a config plugin, and what breaks EAS Update. This skill builds a feature that respects them, in your app's existing idiom.
 
+Field notes: `.claude/references/mobile.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the app first

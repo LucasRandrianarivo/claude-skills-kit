@@ -13,6 +13,8 @@ argument-hint: "[file or pattern]"
 ## Overview
 Run, diagnose, and fix tests using Vitest. If a file or pattern is provided, scope to that. Otherwise, run the full suite.
 
+Field notes: `.claude/references/testing.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Discovery

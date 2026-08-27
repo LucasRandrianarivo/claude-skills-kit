@@ -18,6 +18,8 @@ The question this skill answers: **when it breaks at 3am, can someone find out w
 
 Three signals, each answering a different question: **logs** (what happened in this request), **metrics** (how often, how fast, across all requests), **traces** (where the time went across services). You need all three, and you need them joined by a correlation id.
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Audit what exists

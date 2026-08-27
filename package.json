@@ -1,7 +1,7 @@
 {
   "name": "claude-skills-kit",
-  "version": "3.1.0",
-  "description": "The complete skills kit for Claude Code — 75+ commands, 20 subagents and 8 rules: project mode (brainstorm, cahier des charges, roadmap, execution, acceptance, delivery), fullstack orchestration, frontend, mobile, API integration, CI/CD, Docker, Nginx, git, ship & deploy. Auto-detected for your stack.",
+  "version": "3.2.0",
+  "description": "The complete skills kit for Claude Code — 88 commands, 20 subagents, 9 rules and 10 domain field-note references: project mode, fullstack orchestration, frontend, mobile, database, auth, payments, jobs, cache, search, realtime, AI features, CI/CD, Kubernetes, observability, GDPR, ship & deploy. Auto-detected for your stack.",
   "author": "Lucas Randrianarivo <luca@supplyos.com>",
   "license": "MIT",
   "repository": {
@@ -51,7 +51,19 @@
     "git",
     "project-management",
     "orchestration",
-    "developer-tools"
+    "developer-tools",
+    "kubernetes",
+    "terraform",
+    "caching",
+    "queues",
+    "search",
+    "realtime",
+    "llm",
+    "feature-flags",
+    "analytics",
+    "finops",
+    "refactoring",
+    "architecture"
   ],
   "bin": {
     "claude-skills-kit": "./bin/install.js"
@@ -61,6 +73,7 @@
     "assets/",
     "skills/",
     "templates/",
+    "references/",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"

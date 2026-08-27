@@ -1,5 +1,37 @@
 # Changelog
 
+## 3.2.0 — 2026-08-27
+
+The expertise release: 14 more skills, and a **field-notes layer** that turns the kit from a set of procedures into a set of specialists.
+
+### Added — field notes (`.claude/references/`, 10 domains)
+
+Dense domain references the skills consult and answer from: the mechanism that actually produces the behavior, the trap that looks correct, a symptom → cause → confirm → fix table, the numbers worth knowing, and where the decision usually goes wrong.
+
+`database.md` (plan/statistics/index-order, reading EXPLAIN, isolation anomalies, migration lock profiles) · `frontend.md` (rendering costs, framework reactivity traps, hydration mismatches, the CSS rules behind most layout bugs) · `security.md` (access control first, injection by interpreter, auth traps, secrets, supply chain, LLM) · `distributed.md` (the three outcomes of a network call, retry rules, idempotency, outbox/inbox, ordering, backpressure) · `http.md` (Cache-Control decoded, Vary, status semantics, cookies, CORS, CDN) · `devops.md` (container layers and PID 1, the Kubernetes failure table, proxy traps, zero-downtime requirements) · `testing.md` (where false greens come from, level selection, the four causes of flakes) · `llm.md` (reliable output, injection as architecture, evals, cost levers, RAG diagnosis) · `mobile.md` (process death, offline, permissions, the upgrade-path test) · `architecture.md` (coupling as the currency, monolith vs services, failure design, strangler fig).
+
+Twenty-one existing skills and eight stack-aware templates now point at their notes.
+
+### Added — `expertise` rule (always active)
+
+Maps every domain to its notes, and sets the standard for answering a question in one: **mechanism → the trap that applies here → the verification → what would change the answer**, read from the notes rather than recalled. Versioned facts (pricing, API versions, deprecations) are always fetched live and cited; the notes never override the repository's own reality.
+
+### Added — backend systems (6 commands)
+
+`/jobs` (outbox instead of enqueue-and-hope, idempotent handlers, retryable vs terminal, DLQ with replay, scheduled-job locking and DST), `/cache` (keys that encode every input, invalidation strategy, stampede protection, and never caching identity-dependent data in a shared cache), `/realtime` (transport chosen honestly, reconnection **with state recovery**, per-subscription authorization, shared bus across instances, backpressure), `/search` (start with Postgres, outbox-fed indexing, alias-swap reindex, relevance against a judgment set, permission filtering in-query), `/files` (presigned direct upload, validation on bytes, re-encoded images, separate origin, signed URLs), `/api-design` (one error envelope with machine codes, cursor pagination, idempotency keys, rate-limit headers, versioning with a sunset path).
+
+### Added — product engineering (5 commands)
+
+`/llm` (structured output + validation, prompt injection as an architectural problem, evals **before** prompt tuning, cost/latency levers, degraded mode), `/flags` (owner and removal date at creation, safe defaults, deterministic bucketing, staged rollout, pre-registered experiment decisions), `/analytics` (tracking plan from questions, one convention, server-side outcomes, anonymous→user aliasing, no PII), `/architecture` (boundaries and data ownership, sync vs async, a failure table per dependency, ADRs for one-way doors), `/refactor` (characterization tests first, one mechanical change per commit, strangler fig).
+
+### Added — infrastructure (3 commands)
+
+`/k8s` (probes — liveness never checks a dependency — resources, rollouts that drop zero requests, config reload, autoscaling on the right metric), `/iac` (remote locked state, reading a plan for destroy/replace, pinning, drift, safe adoption), `/cost` (attribute before optimizing, unit economics, the waste checklist, a cut list with risk and reversibility).
+
+### Installer
+
+Field notes install to `.claude/references/` and are listed by `list`; new profile groups `backend` and `product`; `platform`, `quality` and `plan` extended; `expertise` added to the core rules; routing rows for every new skill. Fixed: `remove <skill>` no longer deletes a shared field-notes file.
+
 ## 3.1.0 — 2026-08-27
 
 Filling the gaps: the parts of a real product the kit didn't cover yet — the database, auth, money, running it in production, and the compliance and reach layers.

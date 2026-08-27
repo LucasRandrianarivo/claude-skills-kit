@@ -19,6 +19,8 @@ Nginx sits between every user and your app: a wrong line here breaks WebSockets,
 
 Always: **test before reload.** `nginx -t` is not optional, and a config that fails to reload takes the site down.
 
+Field notes: `.claude/references/http.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Establish the target

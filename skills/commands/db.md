@@ -19,6 +19,8 @@ The database outlives every rewrite of the code on top of it. A missing constrai
 
 Works with the project's own tooling — Prisma, Drizzle, TypeORM, Sequelize, Knex, Django, Rails, SQLAlchemy, Alembic, Flyway, raw SQL — detected before anything is written.
 
+Field notes: `.claude/references/database.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Detect

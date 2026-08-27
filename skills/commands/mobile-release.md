@@ -16,6 +16,8 @@ argument-hint: "[--platform ios|android|both] [--track internal|beta|production]
 ## Overview
 A mobile release is irreversible in a way a web deploy is not: users hold the binary, review takes days, and a bad build lives on devices until they update. So the order is: decide **what** can ship how (OTA vs store), verify on real builds, roll out **staged**, and know the rollback move before you start.
 
+Field notes: `.claude/references/mobile.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 0: OTA or store build?

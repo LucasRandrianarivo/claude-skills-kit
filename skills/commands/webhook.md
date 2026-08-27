@@ -17,6 +17,8 @@ A webhook endpoint is a public, unauthenticated-by-default POST route that a thi
 
 This skill builds (or fixes) the receiver so it's safe, idempotent, and observable.
 
+Field notes: `.claude/references/distributed.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the vendor's delivery contract

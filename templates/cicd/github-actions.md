@@ -16,6 +16,8 @@ argument-hint: "[--audit] [--add <lint|test|build|deploy|release>] [--fix]"
 ## Overview
 A pipeline has three jobs: catch what a reviewer can't, be fast enough that nobody skips it, and never become an attack path into your repo. Most workflows fail at least two. This skill audits and fixes yours, using the project's real commands — never a template pasted from a blog.
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read what exists

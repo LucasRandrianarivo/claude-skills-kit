@@ -20,6 +20,8 @@ The rule that prevents all three: **the provider's webhook is the source of trut
 
 Builds on `/integrate` (client, retries, secrets) and `/webhook` (signature, dedupe, ordering); this skill adds the money-specific correctness.
 
+Field notes: `.claude/references/distributed.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Establish the model

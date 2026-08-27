@@ -18,6 +18,8 @@ Every API integration fails the same way: it works in the demo, then dies in pro
 
 The output is not "a function that calls the API". It's a client with an auth strategy, a resilience policy, typed boundaries, secrets handled properly, and tests that don't hit the vendor.
 
+Field notes: `.claude/references/distributed.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the API before writing anything

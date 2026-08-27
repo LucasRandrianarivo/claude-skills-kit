@@ -18,6 +18,8 @@ argument-hint: "[feature or path] [--strategy] [--missing] [--flake] [--e2e]"
 
 The measure that matters is not coverage percentage — it's **"would this suite catch the bug we're about to ship?"** A codebase at 90% coverage with no negative tests is untested where it counts.
 
+Field notes: `.claude/references/testing.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the current state

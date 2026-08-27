@@ -18,6 +18,8 @@ Configuration failures are boring and expensive: a missing variable that crashes
 
 The principle: **config comes from the environment; secrets never live in the repository; the app refuses to start if either is wrong.**
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Inventory

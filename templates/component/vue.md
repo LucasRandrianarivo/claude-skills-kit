@@ -14,6 +14,8 @@ argument-hint: "<component name and behavior> [--no-test] [--story]"
 ## Overview
 A component is done when every state is designed, it works from the keyboard, its API can't be misused, and a test proves it. This skill builds that component in **your** codebase's idiom — Composition API or Options API, whichever the neighbors use.
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the codebase first

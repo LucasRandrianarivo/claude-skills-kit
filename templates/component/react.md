@@ -16,6 +16,8 @@ argument-hint: "<component name and behavior> [--no-test] [--story]"
 ## Overview
 A component isn't done when it renders the happy path. It's done when every state it can be in is designed, it's usable from a keyboard, its API can't be misused, and a test proves it. This skill builds that component — in **your** codebase's idiom, not a generic tutorial one.
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the codebase first

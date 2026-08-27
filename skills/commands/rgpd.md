@@ -19,6 +19,8 @@ GDPR obligations become **code**: a retention policy is a deletion job, consent 
 
 It does not replace legal advice. It produces the map, the mechanisms and the gaps; **the legal basis, the DPO's decisions, the DPA signatures and the privacy policy wording are the organization's call** — flag them, don't invent them.
 
+Field notes: `.claude/references/security.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1 (`--map`): Data map — you cannot comply with what you can't list

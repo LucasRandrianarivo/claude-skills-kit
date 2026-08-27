@@ -13,6 +13,8 @@ argument-hint: "[file or pattern]"
 ## Overview
 Stack-agnostic test running. Discovers the project's test command, runs the suite (or the given scope), diagnoses failures, and fixes them.
 
+Field notes: `.claude/references/testing.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Discover the test command

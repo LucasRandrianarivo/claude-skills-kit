@@ -14,6 +14,8 @@ argument-hint: "<screen or feature> [--ios-only] [--android-only]"
 ## Overview
 Mobile punishes what the web forgives: no network, a cold start, a 60Hz frame budget, a notch, a back button that must do the right thing, and two platforms that disagree. This skill builds a React Native feature that handles those by construction — in your app's existing idiom.
 
+Field notes: `.claude/references/mobile.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the app first

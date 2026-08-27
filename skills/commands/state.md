@@ -18,6 +18,8 @@ Most frontend bugs that survive code review are state bugs: stale data after a m
 
 The organizing principle: **server state and client state are different problems.** Server state is a cache of someone else's data (it goes stale, it needs invalidation, it can fail). Client state is yours (it's synchronous, it's truth). Code that mixes them produces both classes of bug at once.
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Map what exists

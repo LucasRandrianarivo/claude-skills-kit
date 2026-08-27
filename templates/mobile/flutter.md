@@ -14,6 +14,8 @@ argument-hint: "<screen or feature> [--ios-only] [--android-only]"
 ## Overview
 Flutter gives you one codebase and two sets of platform expectations. This skill builds a feature that handles the states mobile actually has — offline, permission-denied, cold start, large font scale — in your app's existing idiom (Riverpod/Bloc/Provider, GoRouter or Navigator 2.0).
 
+Field notes: `.claude/references/mobile.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the app first

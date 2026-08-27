@@ -13,6 +13,8 @@ argument-hint: "<screen or feature> [--ios-only] [--android-only]"
 ## Overview
 Framework-agnostic mobile feature work. Mobile fails in ways the web doesn't: no network, denied permissions, cold starts, notches, system font scaling, a hardware back button, and two platforms with different expectations. Discover the project's framework and idiom first, then build for those realities.
 
+Field notes: `.claude/references/mobile.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Discover the app's idiom

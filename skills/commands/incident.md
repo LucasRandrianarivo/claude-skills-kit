@@ -17,6 +17,8 @@ An incident is not a debugging session: the goal is **stop the bleeding first, u
 
 Complements `/investigate` (root cause, no time pressure) and `/canary` (post-deploy watch).
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Declare & size (2 minutes, not 20)

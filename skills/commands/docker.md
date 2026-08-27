@@ -18,6 +18,8 @@ Most Dockerfiles work and are still wrong: 1.2GB because the build toolchain shi
 
 This skill fixes the four things that matter: **correctness, size, build speed, security**.
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read the project and what exists

@@ -14,6 +14,8 @@ argument-hint: "<component name and behavior> [--no-test]"
 ## Overview
 Framework-agnostic. A component is done when every state it can be in is designed, it's operable from a keyboard, its API can't be misused, and a test proves it. Discover the project's framework and conventions first, then build in **its** idiom.
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Discover the project's idiom

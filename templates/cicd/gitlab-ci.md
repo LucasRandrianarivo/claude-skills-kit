@@ -16,6 +16,8 @@ argument-hint: "[--audit] [--add <lint|test|build|deploy|release>] [--fix]"
 ## Overview
 A pipeline must catch what review can't, stay fast enough that nobody bypasses it, and never leak a protected variable. This skill audits and fixes `.gitlab-ci.yml` using the project's real commands, and keeps merge-request pipelines cheap.
 
+Field notes: `.claude/references/devops.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Read what exists

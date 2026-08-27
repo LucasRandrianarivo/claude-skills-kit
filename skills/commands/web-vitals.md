@@ -19,6 +19,8 @@ argument-hint: "[route] [--budget] [--compare <ref>] [--report-only]"
 
 Iron rule, inherited from `/debug`: **no optimization without a measured cause.** A guessed bottleneck fixed is a regression waiting to happen.
 
+Field notes: `.claude/references/frontend.md` — mechanism, traps and the symptom→cause→fix tables for this domain.
+
 ---
 
 ## Phase 1: Baseline
