@@ -60,6 +60,7 @@ const GROUPS = {
   ],
   quality: [
     'qa', 'health', 'benchmark', 'devex-review', 'cso', 'investigate',
+    'testing', 'upgrade',
   ],
   design: [
     'design-system', 'design-variants', 'design-html',
@@ -69,16 +70,22 @@ const GROUPS = {
     'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag', 'adr',
   ],
   frontend: [
-    'a11y', 'web-vitals', 'responsive', 'state',
+    'a11y', 'web-vitals', 'responsive', 'state', 'seo', 'i18n',
   ],
   agentic: [
     'fullstack', 'contract', 'orchestrate',
   ],
   api: [
-    'api-scout', 'integrate', 'webhook', 'api-refresh',
+    'api-scout', 'integrate', 'webhook', 'api-refresh', 'notifications',
   ],
   platform: [
-    'nginx', 'docker', 'git',
+    'nginx', 'docker', 'git', 'observability', 'incident', 'env',
+  ],
+  data: [
+    'db', 'payments',
+  ],
+  security: [
+    'auth', 'rgpd',
   ],
   mobile: [
     'mobile-release',
@@ -98,7 +105,7 @@ const TEMPLATE_GROUPS = {
 };
 
 const RULE_GROUPS = {
-  core: ['careful', 'learnings', 'greeting'],
+  core: ['careful', 'learnings', 'greeting', 'evidence'],
   guard: ['freeze', 'guard', 'redact', 'decisions'],
 };
 
@@ -455,35 +462,50 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
     .map((r) => `@.claude/rules/${r}.md`)
     .join('\n');
 
-  // Each row is listed with the commands it points at: a row is written only
-  // when at least one of them was actually installed for this profile.
+  // Each row lists the commands it points at: only the installed ones are
+  // rendered, and a row whose commands are all absent is dropped entirely — so
+  // a narrow profile never points Claude at a skill the project doesn't have.
+  const has = (c) => installedCommands.has(c);
   const routingRows = [
-    [['project'], '| Run a whole project (idea → delivery) | `/project` (then `/brainstorm`, `/cdc`, `/roadmap`, `/exec-plan`, `/validate`, `/delivery`) |'],
-    [['spec'], '| Turn an idea into a spec | `/spec` |'],
-    [['autoplan', 'plan-eng-review'], '| Review a plan before building | `/autoplan` (or `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/plan-devex-review`) |'],
-    [['feat', 'fullstack'], '| Build a feature end-to-end | `/feat` (one layer) or `/fullstack` (db + api + client, contract-first) |'],
-    [['contract'], '| Agree an API shape between layers | `/contract` |'],
-    [['orchestrate'], '| Run wide repetitive work with many agents | `/orchestrate` |'],
-    [['component'], '| Build a UI component | `/component`, then `/a11y` + `/responsive` |'],
-    [['a11y', 'responsive', 'web-vitals', 'state'], '| Frontend quality | `/a11y`, `/responsive`, `/web-vitals`, `/state` |'],
-    [['mobile', 'mobile-release'], `| Mobile work | ${[
-      installedCommands.has('mobile') ? '`/mobile`' : null,
-      installedCommands.has('mobile-release') ? '`/mobile-release`' : null,
-    ].filter(Boolean).join(', ')} |`],
-    [['api-scout', 'integrate', 'webhook'], '| Use a third-party API | `/api-scout` (choose) → `/integrate` (build) → `/webhook` (inbound) |'],
-    [['api-refresh'], '| Keep integrations current | `/api-refresh` |'],
-    [['debug', 'investigate'], '| Debug an issue | `/debug` (code) or `/investigate` (any anomaly) |'],
-    [['review', 'pr-review'], '| Review code | `/review` (local diff) or `/pr-review` (pull request) |'],
-    [['security-review', 'cso'], '| Security audit | `/security-review` (diff) or `/cso` (full codebase) |'],
-    [['qa'], '| QA a web app | `/qa` |'],
-    [['test', 'build'], '| Run tests / build | `/test`, `/build` |'],
-    [['design-system', 'design-variants', 'design-review'], '| Design work | `/design-system`, `/design-variants`, `/design-review` |'],
-    [['cicd', 'docker', 'nginx', 'git'], '| CI/CD, containers, server, git | `/cicd`, `/docker`, `/nginx`, `/git` |'],
-    [['ship', 'deploy', 'canary'], '| Ship & deploy | `/ship`, `/deploy`, `/canary` |'],
-    [['document', 'diagram', 'make-pdf'], '| Docs, diagrams, PDF | `/document`, `/diagram`, `/make-pdf` |'],
-    [['learn', 'decisions', 'context-save'], '| Knowledge & memory | `/learn`, `/decisions`, `/context-save`, `/context-restore` |'],
-    [['health', 'retro'], '| Health & retro | `/health`, `/retro` |'],
-  ];
+    ['Run a whole project (idea → delivery)', [['project', '`/project` (then `/brainstorm`, `/cdc`, `/roadmap`, `/exec-plan`, `/validate`, `/delivery`)']]],
+    ['Turn an idea into a spec', [['spec', '`/spec`']]],
+    ['Review a plan before building', [['autoplan', '`/autoplan`'], ['plan-ceo-review', '`/plan-ceo-review`'], ['plan-eng-review', '`/plan-eng-review`'], ['plan-design-review', '`/plan-design-review`'], ['plan-devex-review', '`/plan-devex-review`']]],
+    ['Build a feature end-to-end', [['feat', '`/feat` (one layer)'], ['fullstack', '`/fullstack` (db + api + client, contract-first)']], ' or '],
+    ['Agree an API shape between layers', [['contract', '`/contract`']]],
+    ['Run wide repetitive work with many agents', [['orchestrate', '`/orchestrate`']]],
+    ['Build a UI component, then audit it', [['component', '`/component`'], ['a11y', '`/a11y`'], ['responsive', '`/responsive`']]],
+    ['Frontend quality', [['a11y', '`/a11y`'], ['responsive', '`/responsive`'], ['web-vitals', '`/web-vitals`'], ['state', '`/state`']]],
+    ['SEO & internationalization', [['seo', '`/seo`'], ['i18n', '`/i18n`']]],
+    ['Mobile work', [['mobile', '`/mobile`'], ['mobile-release', '`/mobile-release`']]],
+    ['Use a third-party API', [['api-scout', '`/api-scout` (choose)'], ['integrate', '`/integrate` (build)'], ['webhook', '`/webhook` (inbound)']], ' → '],
+    ['Keep integrations current', [['api-refresh', '`/api-refresh`']]],
+    ['Schema, migrations, slow queries', [['db', '`/db`']]],
+    ['Auth & permissions', [['auth', '`/auth`']]],
+    ['Payments & billing', [['payments', '`/payments`']]],
+    ['Email & push', [['notifications', '`/notifications`']]],
+    ['GDPR/RGPD compliance', [['rgpd', '`/rgpd`']]],
+    ['Debug an issue', [['debug', '`/debug` (code)'], ['investigate', '`/investigate` (any anomaly)']], ' or '],
+    ['Review code', [['review', '`/review` (local diff)'], ['pr-review', '`/pr-review` (pull request)']], ' or '],
+    ['Security audit', [['security-review', '`/security-review` (diff)'], ['cso', '`/cso` (full codebase)']], ' or '],
+    ['QA a web app', [['qa', '`/qa`']]],
+    ['Run tests / build', [['test', '`/test`'], ['build', '`/build`']]],
+    ['Decide what to test, write what is missing', [['testing', '`/testing`']]],
+    ['Upgrade a framework or dependency', [['upgrade', '`/upgrade`']]],
+    ['Design work', [['design-system', '`/design-system`'], ['design-variants', '`/design-variants`'], ['design-html', '`/design-html`'], ['design-review', '`/design-review`']]],
+    ['CI/CD, containers, server, git', [['cicd', '`/cicd`'], ['docker', '`/docker`'], ['nginx', '`/nginx`'], ['git', '`/git`']]],
+    ['Ship & deploy', [['ship', '`/ship`'], ['deploy', '`/deploy`'], ['canary', '`/canary`']]],
+    ['Logs, metrics, traces, alerts', [['observability', '`/observability`']]],
+    ['Production is broken right now', [['incident', '`/incident`']]],
+    ['Config & secrets', [['env', '`/env`']]],
+    ['Docs, diagrams, PDF', [['document', '`/document`'], ['diagram', '`/diagram`'], ['make-pdf', '`/make-pdf`']]],
+    ['Knowledge & memory', [['learn', '`/learn`'], ['decisions', '`/decisions`'], ['context-save', '`/context-save`'], ['context-restore', '`/context-restore`']]],
+    ['Health & retro', [['health', '`/health`'], ['retro', '`/retro`']]],
+  ]
+    .map(([label, items, join]) => {
+      const present = items.filter(([c]) => has(c)).map(([, text]) => text);
+      return present.length ? `| ${label} | ${present.join(join || ', ')} |` : null;
+    })
+    .filter(Boolean);
 
   return [
     '',
@@ -497,9 +519,7 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
     '',
     '| When the user wants to | Use |',
     '| --- | --- |',
-    ...routingRows
-      .filter(([cmds]) => cmds.some((c) => installedCommands.has(c)))
-      .map(([, row]) => row),
+    ...routingRows,
     '',
     stackLine,
     '',

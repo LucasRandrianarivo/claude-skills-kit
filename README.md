@@ -1,6 +1,6 @@
 # claude-skills-kit
 
-The complete skills kit for [Claude Code](https://claude.ai/code) — **65+ production-ready commands, 19 subagents and 7 rules** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, API integration, CI/CD, Docker, Nginx, git, ship & deploy. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
+The complete skills kit for [Claude Code](https://claude.ai/code) — **75+ production-ready commands, 20 subagents and 8 rules** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, API integration, CI/CD, Docker, Nginx, git, observability, incidents, GDPR, ship & deploy. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
 
 ![npx claude-skills-kit init — stack detection and skill installation demo](https://raw.githubusercontent.com/LucasRandrianarivo/claude-skills-kit/main/docs/demo.gif)
 
@@ -145,6 +145,33 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/nginx` | Reverse proxy, TLS, caching (never an authenticated response), compression, security headers, rate limiting, SPA/SSR routing — `nginx -t` before every reload |
 | `/git` | The dangerous operations with rails: conflicts, history cleanup, bisect, recovery via reflog, safe undo per situation, GitHub/GitLab flows |
 
+### Data, auth & money
+
+| Command | What it does |
+|---|---|
+| `/db` | Schema design, migrations (expand→migrate→contract, lock profile, tested `down`), indexes, `EXPLAIN`-driven query optimization, N+1, and a **restore test** with measured RPO/RTO |
+| `/auth` | Authn *and* authz: sessions vs tokens, cookie flags, password/MFA/reset rules, OAuth2+PKCE, and the object-level (IDOR) and deny-by-default checks where the real bugs are — with the negative tests |
+| `/payments` | The webhook is the source of truth, never the redirect: idempotency keys, server-computed amounts, guarded state machine, dunning, refunds, reconciliation |
+| `/rgpd` | Technical GDPR: data map, retention **jobs**, consent gating before load, export/erasure (backups and processors included), transfers, breach readiness |
+
+### Run it in production
+
+| Command | What it does |
+|---|---|
+| `/observability` | Structured logs with a correlation id, RED + business metrics, OpenTelemetry traces, alerts that page only for symptoms users feel, SLOs with an error budget |
+| `/incident` | Mitigate first, diagnose second: severity, timeline, rollback/flag/shed, 15-minute comms cadence, then a blameless postmortem with owned, dated actions |
+| `/env` | Config & secrets: classification, boot-time validation, `.env` hygiene, secret storage, and zero-downtime rotation |
+| `/upgrade` | Framework and dependency majors — one per branch, migration guide filtered to your call sites, codemods reviewed, behavior changes exercised |
+
+### Reach & quality
+
+| Command | What it does |
+|---|---|
+| `/seo` | Technical SEO: indexability (the `Disallow: /` catastrophe), canonicals, per-template metadata, JSON-LD, sitemaps from the source of truth |
+| `/i18n` | ICU messages (never concatenation), `Intl` formatting, locale routing, RTL, catalog drift, and the emails/exports everyone forgets |
+| `/testing` | Test **strategy**: the level each behavior belongs at, the missing negative paths, flake elimination, and every new test proven to fail first |
+| `/notifications` | Email deliverability (SPF/DKIM/DMARC, separated streams), async sending with bounce suppression, push permission timing and token lifecycle |
+
 ### Ship & operate
 
 | Command | What it does |
@@ -205,6 +232,7 @@ Specialist reviewers — dispatched automatically by `/pr-review` based on what 
 | `specialist-accessibility` | Any interactive markup: semantics, keyboard, focus, names, contrast (WCAG 2.2 AA) |
 | `specialist-frontend-perf` | Bundle growth, render cost, LCP/INP/CLS impact of a change |
 | `specialist-integration` | Third-party calls: timeouts, retries, idempotency, secrets, webhook verification |
+| `specialist-database` | Schema constraints, indexes, N+1, transaction scope, locking, tenancy filters |
 
 ### Rules (always active)
 
@@ -217,6 +245,7 @@ Specialist reviewers — dispatched automatically by `/pr-review` based on what 
 | `learnings` | Log bugs/fixes to `.claude/learnings.jsonl`; consult them before debugging |
 | `decisions` | Auto-log significant decisions to `.claude/decisions.jsonl`; auto-escalate architecture-shaping ones into ADRs (`docs/adr/`); accepted ADRs are binding |
 | `greeting` | "Bonjour" lists all available skills dynamically |
+| `evidence` | No claim without proof: "tests pass", "it's fixed", "not used anywhere" require the command that was run — skipped checks are named, never rounded up |
 
 Rules are activated through `@.claude/rules/*.md` imports in the managed CLAUDE.md block, so they actually load every session.
 
@@ -252,6 +281,7 @@ npx claude-skills-kit init --profile core                  # the essential v1 se
 npx claude-skills-kit init --profile core,ship,plan        # + ship & plan reviews
 npx claude-skills-kit init --profile core,frontend,api     # frontend + integrations
 npx claude-skills-kit init --profile project,agentic       # run a whole project
+npx claude-skills-kit init --profile data,security,platform # backend & ops
 npx claude-skills-kit init                                 # full (default)
 ```
 
@@ -261,12 +291,14 @@ npx claude-skills-kit init                                 # full (default)
 | `plan` | spec, the 4 plan reviews, autoplan, office-hours |
 | `project` | project, brainstorm, cdc, roadmap, exec-plan, validate, delivery |
 | `agentic` | fullstack, contract, orchestrate |
-| `frontend` | a11y, responsive, web-vitals, state + stack-aware component |
+| `frontend` | a11y, responsive, web-vitals, state, seo, i18n + stack-aware component |
 | `mobile` | mobile-release + stack-aware mobile (installed only for a mobile project) |
-| `api` | api-scout, integrate, webhook, api-refresh |
-| `platform` | nginx, docker, git + stack-aware cicd |
+| `api` | api-scout, integrate, webhook, api-refresh, notifications |
+| `platform` | nginx, docker, git, observability, incident, env + stack-aware cicd |
+| `data` | db, payments |
+| `security` | auth, rgpd |
 | `ship` | ship, deploy, canary, release-notes, retro, pr-review |
-| `quality` | qa, health, benchmark, devex-review, cso, investigate |
+| `quality` | qa, health, benchmark, devex-review, cso, investigate, testing, upgrade |
 | `design` | design-system, design-variants, design-html |
 | `knowledge` | learn, decisions, context-save/restore, document, diagram, make-pdf, scrape, skillify, rag, adr |
 | `guard` | freeze, guard, redact, decisions rules |
@@ -293,9 +325,9 @@ Unknown stack? Every stack-aware category has a `generic.md` fallback that disco
 ```
 your-project/
 ├── .claude/
-│   ├── commands/          ← all slash commands (up to 69 in full profile)
-│   ├── agents/            ← 19 subagents with proper frontmatter
-│   ├── rules/             ← 7 rules, imported by CLAUDE.md
+│   ├── commands/          ← all slash commands (up to 81 in full profile)
+│   ├── agents/            ← 20 subagents with proper frontmatter
+│   ├── rules/             ← 8 rules, imported by CLAUDE.md
 │   ├── context/           ← saved working contexts (/context-save)
 │   ├── project/           ← project-mode state: cdc.md, roadmap.md, exec-*.md, validation-*
 │   ├── contracts/         ← frozen API contracts (/contract, /fullstack)

@@ -12,11 +12,11 @@ Reviews a pull request (or the current branch against its base) before it lands.
 /pr-review                    — review the current branch vs its base branch
 /pr-review 123                — review PR #123 via gh
 /pr-review <pr-url>           — review the PR at that URL via gh
-/pr-review --all-specialists  — force-dispatch all ten specialists
+/pr-review --all-specialists  — force-dispatch all eleven specialists
 /pr-review --security         — force-include one specialist (also: --red-team,
                                 --performance, --api-contract, --data-migration,
                                 --maintainability, --testing, --accessibility,
-                                --frontend-perf, --integration)
+                                --frontend-perf, --integration, --database)
 ```
 
 ## Argument Parsing
@@ -25,7 +25,7 @@ Parse `$ARGUMENTS`:
 - **No arguments**: review the current branch against its base.
 - **A number or PR URL**: run `gh pr view <arg> --json number,title,body,baseRefName,headRefName`. If the PR's head branch is not checked out, run `gh pr checkout <number>`. If the working tree is dirty, stop and ask the user first, presenting numbered options: 1) stash and checkout, 2) abort.
 - **`--<specialist>`**: force-include that specialist regardless of detection.
-- **`--all-specialists`**: dispatch all ten specialists.
+- **`--all-specialists`**: dispatch all eleven specialists.
 
 ---
 
@@ -104,6 +104,7 @@ Inspect the changed-file list and diff content, then select:
 | Components, pages/templates, styles, or any markup rendering interactive elements | `specialist-accessibility` |
 | Components/routes, client data fetching, images/fonts, bundler config, or a new client dependency | `specialist-frontend-perf` |
 | Outbound HTTP/SDK calls, webhook receivers, OAuth/token handling, API keys or integration config | `specialist-integration` |
+| Schema/model files, migrations, repositories, queries (SQL or ORM), or handlers reading/writing persistent data | `specialist-database` |
 
 Print the selection: "Dispatching N specialists: [names]. Skipped: [names] (signal not detected)."
 

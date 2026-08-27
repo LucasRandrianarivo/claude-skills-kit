@@ -1,5 +1,33 @@
 # Changelog
 
+## 3.1.0 — 2026-08-27
+
+Filling the gaps: the parts of a real product the kit didn't cover yet — the database, auth, money, running it in production, and the compliance and reach layers.
+
+### Added — data, auth & money (4 commands, 1 agent)
+
+- **`/db`**: schema design (keys, constraints, money and time types, tenancy), migrations with a tested `down` and a stated lock profile, expand→migrate→contract for breaking changes, `EXPLAIN`-driven optimization, N+1 hunting, and a **restore test** with measured RPO/RTO.
+- **`/auth`**: sessions vs tokens with revocation as the deciding factor, cookie flags, session regeneration, Argon2id/bcrypt, reset and MFA flows, OAuth2 with PKCE and validated `state`/`nonce` — then the half that's usually missing: object-level (IDOR) checks, deny-by-default routes, one policy layer, and the negative test suite that proves it.
+- **`/payments`**: the webhook is the source of truth and the redirect grants nothing; idempotency keys derived from your own ids, server-computed amounts re-verified against the provider, a guarded state machine, dunning, refunds, and reconciliation against the provider's books.
+- **`/rgpd`**: data map, retention as an enforced job, consent gating *before* trackers load, export/erasure covering logs, backups and processors, transfers, and breach readiness — with legal decisions routed to the organization rather than invented.
+- Agent **`specialist-database`** — schema constraints, indexes, N+1, transaction scope, locking, tenancy filters; `/pr-review` now dispatches **eleven** specialists.
+
+### Added — running it in production (4 commands)
+
+`/observability` (correlation ids, RED + business metrics, OpenTelemetry, alerts that page only for user-visible symptoms, SLOs with an error budget), `/incident` (mitigate before diagnosing, timeline, comms cadence, blameless postmortem with owned actions), `/env` (config classification, boot-time validation, secret storage, zero-downtime rotation), `/upgrade` (one major per branch, migration guide filtered to real call sites, behavior changes exercised).
+
+### Added — reach & quality (4 commands)
+
+`/seo` (indexability, canonicals, per-template metadata, JSON-LD, sitemaps from the source of truth), `/i18n` (ICU messages, `Intl` formatting, locale routing, RTL, catalog drift, the non-UI surfaces), `/testing` (which level each behavior belongs at, missing negative paths, flake elimination, every new test proven to fail first), `/notifications` (SPF/DKIM/DMARC, separated streams, async sending with bounce suppression, push permission timing and token lifecycle).
+
+### Added — `evidence` rule (always active)
+
+No claim without proof: "tests pass", "it's fixed", "it's deployed", "X isn't used anywhere" each require the command that was run in this session. Skipped checks are named rather than rounded up, failures are reported with their output, and another agent's report counts as a claim, not as evidence.
+
+### Installer
+
+New profile groups `data` and `security`; `quality`, `frontend`, `api` and `platform` extended; `evidence` added to the always-installed core rules; routing rows for every new skill.
+
 ## 3.0.0 — 2026-08-27
 
 The fullstack release: from a dev-lifecycle kit to a kit that runs the whole job — a project from idea to delivery, a feature across every layer, the frontend, the mobile app, the integrations, and the platform underneath.
