@@ -24,6 +24,7 @@ They exist for two situations:
 | LLM features: reliability, injection, evals, cost | `references/llm.md` | `/llm`, `/integrate` |
 | Mobile: offline, process death, permissions, release | `references/mobile.md` | `/mobile`, `/mobile-release` |
 | Boundaries, coupling, sync/async, failure design | `references/architecture.md` | `/architecture`, `/adr`, `code-architect` |
+| Client work: pricing, scope creep, estimation, communication | `references/consulting.md` | `/proposal`, `/estimate`, `/status`, `/change-request`, `/invoice`, `/cdc`, `/delivery` |
 
 ## How to answer a domain question
 

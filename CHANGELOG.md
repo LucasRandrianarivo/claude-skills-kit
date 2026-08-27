@@ -1,5 +1,30 @@
 # Changelog
 
+## 3.3.0 — 2026-08-27
+
+The professional layer: the work around the code — client engagements and team practice.
+
+### Added — client work (6 commands)
+
+- **`/proposal`** — the commercial proposal (devis): qualification before writing, a pricing model chosen deliberately (fixed per phase, capped T&M, milestones, retainer — each with who carries the risk), tiered options so the conversation is "which one" rather than "yes or no", assumptions stated as price conditions, an explicit **not included** list, validity date and terms.
+- **`/estimate`** — ranges instead of point estimates, the categories everyone forgets (tests, review, deployment, edge cases, client waiting time), a reference-class cross-check against the decomposition, spikes instead of numbers for unknowns, and re-estimation that never absorbs a slip by shrinking what remains.
+- **`/kickoff`** — the named decision-maker and arbiter, the access table with dates and consequences, cadence and channels of record, the definition of done agreed in writing, the change-request process explained on day one, and a technical kickoff that proves you can build, run and deploy before the first sprint.
+- **`/status`** — the report whose job is that nobody is surprised: defensible progress (milestones, not percentages), budget burn, a blockers section naming who must act and since when, decisions needed, and how to report a red project early with options rather than at the deadline.
+- **`/change-request`** — qualification first (in scope · ambiguity · out of scope · **defect**, which is never a change request), quantification including rework and regression risk, schedule impact priced separately from effort, three options including deferral, written approval before any work, and a log that makes absorbed goodwill visible.
+- **`/invoice`** — billing reconciled against the contract and actual acceptance, the sweep for approved change requests that were never billed, cap warnings before the cap is reached, and an effective-rate recap that feeds the next estimate.
+
+### Added — team practice (4 commands)
+
+`/meeting` (no objective, no meeting; the decision-maker attends or the decision isn't on the agenda; a same-day record of decisions and owned actions), `/tech-debt` (inventory from git evidence, cost in days and risk, a pitch in business language with a payback period, repayment inside normal delivery, effect measured afterwards), `/interview` (signals defined before the first call, a timeboxed exercise resembling the job, independent evidence-based scoring, a decision rule agreed in advance, and every candidate answered), `/onboarding` (the cold walk before arrival, a merged change on day one, the six-part codebase map, the 30-day arc and the week-4 retro).
+
+### Added — `consulting.md` field notes
+
+Pricing models and who carries the risk in each · why estimates are structurally wrong (the planning fallacy, the forgotten 40–60%, productive-time arithmetic) · the mechanics of scope creep and the only defense that works · client dependencies as project risks · communication rules · payment hygiene · where it usually gets decided wrong. Wired into the `expertise` rule's reference map.
+
+### Installer
+
+New profile group `pro`; routing rows for the ten new skills.
+
 ## 3.2.0 — 2026-08-27
 
 The expertise release: 14 more skills, and a **field-notes layer** that turns the kit from a set of procedures into a set of specialists.

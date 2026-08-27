@@ -89,6 +89,10 @@ const GROUPS = {
   product: [
     'flags', 'analytics', 'llm',
   ],
+  pro: [
+    'proposal', 'estimate', 'kickoff', 'status', 'change-request', 'invoice',
+    'meeting', 'tech-debt', 'interview', 'onboarding',
+  ],
   data: [
     'db', 'payments',
   ],
@@ -476,6 +480,14 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
   const has = (c) => installedCommands.has(c);
   const routingRows = [
     ['Run a whole project (idea → delivery)', [['project', '`/project` (then `/brainstorm`, `/cdc`, `/roadmap`, `/exec-plan`, `/validate`, `/delivery`)']]],
+    ['Quote or estimate work', [['proposal', '`/proposal`'], ['estimate', '`/estimate`']]],
+    ['Start an engagement', [['kickoff', '`/kickoff`']]],
+    ['Report progress to a client or sponsor', [['status', '`/status`']]],
+    ['Handle a scope change', [['change-request', '`/change-request`']]],
+    ['Prepare billing', [['invoice', '`/invoice`']]],
+    ['Run a meeting that produces decisions', [['meeting', '`/meeting`']]],
+    ['Make the case for fixing technical debt', [['tech-debt', '`/tech-debt`']]],
+    ['Hire or onboard a developer', [['interview', '`/interview`'], ['onboarding', '`/onboarding`']]],
     ['Turn an idea into a spec', [['spec', '`/spec`']]],
     ['Review a plan before building', [['autoplan', '`/autoplan`'], ['plan-ceo-review', '`/plan-ceo-review`'], ['plan-eng-review', '`/plan-eng-review`'], ['plan-design-review', '`/plan-design-review`'], ['plan-devex-review', '`/plan-devex-review`']]],
     ['Build a feature end-to-end', [['feat', '`/feat` (one layer)'], ['fullstack', '`/fullstack` (db + api + client, contract-first)']], ' or '],

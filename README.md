@@ -1,6 +1,6 @@
 # claude-skills-kit
 
-The complete skills kit for [Claude Code](https://claude.ai/code) — **88 production-ready commands, 20 subagents, 9 rules and 10 domain field-note references** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, jobs, cache, search, realtime, AI features, API integration, CI/CD, Kubernetes, Terraform, Nginx, git, observability, incidents, GDPR, ship & deploy. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
+The complete skills kit for [Claude Code](https://claude.ai/code) — **98 production-ready commands, 20 subagents, 9 rules and 11 domain field-note references** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, jobs, cache, search, realtime, AI features, API integration, CI/CD, Kubernetes, Terraform, Nginx, git, observability, incidents, GDPR, ship & deploy — plus the professional layer: proposals, estimation, kickoff, status reporting, change requests, billing, hiring and onboarding. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
 
 ![npx claude-skills-kit init — stack detection and skill installation demo](https://raw.githubusercontent.com/LucasRandrianarivo/claude-skills-kit/main/docs/demo.gif)
 
@@ -211,6 +211,21 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/release-notes` | Post-ship docs: generate release notes from git history, update docs where the surface changed |
 | `/retro` | Engineering retrospective: what shipped, what churned, what broke, top process improvements |
 
+### Professional practice — client & team
+
+| Command | What it does |
+|---|---|
+| `/proposal` | The commercial proposal (devis): pricing model chosen deliberately, tiered options, assumptions as price conditions, an explicit **not included** list, validity and terms |
+| `/estimate` | Ranges not point estimates, the work everyone forgets (tests, review, deploy, edge cases, client waiting), reference-class cross-check, spikes for unknowns, honest re-estimation |
+| `/kickoff` | Named decision-maker and arbiter, the access table with dates, cadence, definition of done, the change-request rule stated warmly on day one |
+| `/status` | The weekly report that prevents surprises: defensible progress, budget burn, blockers naming who must act, decisions needed — and how to report red early |
+| `/change-request` | Qualify (in scope · ambiguity · out of scope · **defect**), quantify including rework and schedule, three options, written approval before any work, and a log that makes absorbed goodwill visible |
+| `/invoice` | Billing reconciled against the contract and acceptance, the sweep for unbilled change requests, cap warnings before the cap, and the effective-rate recap that feeds the next quote |
+| `/meeting` | No objective, no meeting: agenda, the decision to be made, facilitation, and a same-day record of decisions and owned actions |
+| `/tech-debt` | Debt inventoried with git evidence, costed in days and risk, pitched in business language with a payback period, repaid inside normal delivery |
+| `/interview` | Signals defined before the first call, a fair timeboxed exercise that resembles the job, independent scoring on evidence, a decision rule agreed in advance |
+| `/onboarding` | The cold walk before they arrive, a merged change on day one, the six-part codebase map, and the week-4 retro that is your best defect report |
+
 ### Knowledge & memory
 
 | Command | What it does |
@@ -281,7 +296,7 @@ Rules are activated through `@.claude/rules/*.md` imports in the managed CLAUDE.
 
 ### Field notes — the expertise layer
 
-Ten dense domain references install to `.claude/references/`. They are what turns a skill from a checklist into a specialist: the mechanism, the trap that looks correct, the symptom→cause→fix table, and the numbers worth knowing.
+Eleven dense domain references install to `.claude/references/`. They are what turns a skill from a checklist into a specialist: the mechanism, the trap that looks correct, the symptom→cause→fix table, and the numbers worth knowing.
 
 | Reference | Covers |
 |---|---|
@@ -295,6 +310,7 @@ Ten dense domain references install to `.claude/references/`. They are what turn
 | `llm.md` | Reliable output, prompt injection as an architecture problem, evals, cost/latency levers, RAG failure diagnosis |
 | `mobile.md` | Process death, offline, permissions, the upgrade-path test, store review realities |
 | `architecture.md` | Coupling as the currency, monolith vs services honestly, sync/async, failure design, strangler fig |
+| `consulting.md` | Pricing models and who carries the risk, why estimates are structurally wrong, the mechanics of scope creep, communication and payment hygiene |
 
 The always-active `expertise` rule maps each domain to its notes and requires answers to give the **mechanism, the trap, the verification, and what would change the answer** — read from the notes, not from memory. Live facts (pricing, versions, deprecations) are always fetched and cited.
 
@@ -332,6 +348,7 @@ npx claude-skills-kit init --profile core,frontend,api     # frontend + integrat
 npx claude-skills-kit init --profile project,agentic       # run a whole project
 npx claude-skills-kit init --profile data,security,platform # data & ops
 npx claude-skills-kit init --profile backend,product        # services & product engineering
+npx claude-skills-kit init --profile project,pro           # client work end to end
 npx claude-skills-kit init                                 # full (default)
 ```
 
@@ -348,6 +365,7 @@ npx claude-skills-kit init                                 # full (default)
 | `data` | db, payments |
 | `backend` | jobs, cache, realtime, search, files, api-design |
 | `product` | flags, analytics, llm |
+| `pro` | proposal, estimate, kickoff, status, change-request, invoice, meeting, tech-debt, interview, onboarding |
 | `security` | auth, rgpd |
 | `ship` | ship, deploy, canary, release-notes, retro, pr-review |
 | `quality` | qa, health, benchmark, devex-review, cso, investigate, testing, upgrade, refactor |
@@ -377,10 +395,10 @@ Unknown stack? Every stack-aware category has a `generic.md` fallback that disco
 ```
 your-project/
 ├── .claude/
-│   ├── commands/          ← all slash commands (up to 94 in full profile)
+│   ├── commands/          ← all slash commands (up to 104 in full profile)
 │   ├── agents/            ← 20 subagents with proper frontmatter
 │   ├── rules/             ← 9 rules, imported by CLAUDE.md
-│   ├── references/        ← 10 domain field notes (the expertise layer)
+│   ├── references/        ← 11 domain field notes (the expertise layer)
 │   ├── context/           ← saved working contexts (/context-save)
 │   ├── project/           ← project-mode state: cdc.md, roadmap.md, exec-*.md, validation-*
 │   ├── contracts/         ← frozen API contracts (/contract, /fullstack)
