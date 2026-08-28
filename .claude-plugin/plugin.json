@@ -1,8 +1,8 @@
 {
   "name": "claude-skills-kit",
   "displayName": "Claude Skills Kit",
-  "version": "3.4.0",
-  "description": "The complete dev-lifecycle skills kit: client work, project mode, fullstack orchestration, frontend, mobile, database, auth, payments, backend systems, AI features, CI/CD, infrastructure, observability, compliance, ship & deploy \u2014 with 11 domain field-note references.",
+  "version": "3.5.0",
+  "description": "The complete dev-lifecycle skills kit: client work, project mode, fullstack orchestration, frontend, mobile, database, auth, payments, backend systems, AI features, CI/CD, infrastructure, observability, compliance, ship & deploy — with 11 domain field-note references.",
   "author": {
     "name": "Lucas Randrianarivo",
     "url": "https://github.com/LucasRandrianarivo"
@@ -19,5 +19,8 @@
     "backend",
     "devops",
     "client-work"
-  ]
+  ],
+  "experimental": {
+    "evals": "evals/"
+  }
 }

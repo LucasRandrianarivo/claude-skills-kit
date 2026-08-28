@@ -438,6 +438,30 @@ Every installed file is plain markdown in `.claude/`. Edit freely, or use `/skil
 
 Delete the files from `.claude/` and the managed block from `CLAUDE.md`. No global state.
 
+## Evals
+
+The kit ships eight eval cases under `evals/`, checking the behaviors it actually claims — the ones an agent without it reliably gets wrong:
+
+```bash
+claude plugin eval .                 # all cases, plus a no-plugin baseline arm
+claude plugin eval . --case db-*     # one case
+```
+
+Each case is a realistic `prompt.md` plus a `graders/criteria.md` rubric with explicit must / must-not lists. The runner scores a **baseline arm without the plugin**, so what matters is the delta — a case the baseline already passes is testing nothing.
+
+| Case | The wrong answer it catches |
+|---|---|
+| `debug-root-cause` | Patching the symptom instead of finding the cause |
+| `db-slow-query` | Caching over a bad query; an index on the sort column alone |
+| `webhook-idempotency` | Commit-then-enqueue, which loses events silently |
+| `auth-object-level` | Fetch by id and return the row (IDOR) |
+| `cache-authenticated` | `s-maxage` on an account page |
+| `estimate-unknown` | One confident number for undocumented integration work |
+| `change-request-defect` | Billing the client for fixing your own defect |
+| `write-unsourced-claim` | Polishing prose around an unsourced statistic |
+
+**Status: authored, not yet run.** `claude plugin eval` is in early access and was unavailable on the account that wrote them, so the suite has never executed and its scores are unknown. Ready to run, not proven passing — `evals/README.md` says the same, and says what the first run should be expected to change.
+
 ## Composing with other skills
 
 This kit is broad and methodological. For a **specific vendor's product**, install that vendor's own skill instead of writing one — it ships with the product and is versioned against it. Remotion's is the model:

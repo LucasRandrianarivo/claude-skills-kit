@@ -10,13 +10,22 @@
       "name": "claude-skills-kit",
       "source": "./",
       "description": "98 commands, 20 subagents and 11 domain field-note references covering the whole job: proposals and estimation, project mode, fullstack orchestration, frontend, mobile, database, auth, payments, backend systems, AI features, CI/CD, Kubernetes, observability, GDPR, ship and deploy.",
-      "version": "3.4.0",
-      "author": { "name": "Lucas Randrianarivo" },
+      "version": "3.5.0",
+      "author": {
+        "name": "Lucas Randrianarivo"
+      },
       "homepage": "https://github.com/LucasRandrianarivo/claude-skills-kit#readme",
       "repository": "https://github.com/LucasRandrianarivo/claude-skills-kit",
       "license": "MIT",
       "category": "development",
-      "keywords": ["dev-lifecycle", "code-review", "debugging", "fullstack", "devops", "client-work"]
+      "keywords": [
+        "dev-lifecycle",
+        "code-review",
+        "debugging",
+        "fullstack",
+        "devops",
+        "client-work"
+      ]
     }
   ]
 }

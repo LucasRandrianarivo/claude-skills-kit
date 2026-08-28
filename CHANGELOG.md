@@ -1,5 +1,28 @@
 # Changelog
 
+## 3.5.0 — 2026-08-28
+
+Evals: the kit's claims, written as cases that can be scored.
+
+### Added — `evals/` (8 cases)
+
+Each case is a realistic `prompt.md` and a `graders/criteria.md` rubric with explicit must / must-not lists and a three-point scale, in the layout `claude plugin eval` expects. Cases were chosen where the failure is expensive and quiet, and where an agent without the kit reliably does the wrong thing:
+
+- `debug-root-cause` — evidence before hypotheses; catches the symptomatic patch and the added retry.
+- `db-slow-query` — keyset pagination and a composite index with equality columns first; catches caching over a bad query and an index on the sort column alone.
+- `webhook-idempotency` — signature on the raw body, unique-constraint dedupe, and the store-then-schedule ordering; catches commit-then-enqueue, which loses events silently.
+- `auth-object-level` — the ownership predicate inside the query; catches IDOR.
+- `cache-authenticated` — never shared-cache identity-dependent data; catches `s-maxage` on an account page.
+- `estimate-unknown` — a range, and a spike instead of a number for undocumented work.
+- `change-request-defect` — a defect is never a change request; catches billing the client for your own defect.
+- `write-unsourced-claim` — accuracy gates the edit; catches polishing prose around an unsourced statistic.
+
+`experimental.evals` is declared in the plugin manifest, which still passes `claude plugin validate --strict`.
+
+### Honest status
+
+The suite has **never been executed**: `claude plugin eval` is in early access and was unavailable on the account used to author it. The layout follows the CLI's own help text (`prompt.md` + `graders/*.md`); the `case.yaml` form was deliberately avoided because its schema could not be verified from this build. Both `evals/README.md` and the README state this, and note that the first real run should be expected to tighten rubrics that every arm passes.
+
 ## 3.4.0 — 2026-08-28
 
 What three well-known third-party skills — Remotion's, stop-slop, ui-ux-pro-max — do better than this kit did, taken and adapted.
