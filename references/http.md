@@ -71,3 +71,10 @@ curl -sSI <asset-url> | grep -i cache       # immutable on hashed assets?
 curl -sSI <page-url> -H 'Cookie: session=x' # personalized response not public?
 ```
 Check the response **through the CDN**, not only against the origin — they disagree, and the CDN is what users get.
+
+## Where to check the current truth
+Header semantics are specified; CDN behavior is vendor-specific and drifts. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- RFC 9110 (semantics) and RFC 9111 (caching) — https://httpwg.org/specs/
+- MDN HTTP headers — https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+- Your CDN's caching documentation — the cache key and `Vary` handling differ by vendor
+- web.dev caching — https://web.dev/articles/http-cache

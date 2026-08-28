@@ -1,14 +1,27 @@
 # claude-skills-kit
 
-The complete skills kit for [Claude Code](https://claude.ai/code) — **98 production-ready commands, 20 subagents, 9 rules and 11 domain field-note references** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, jobs, cache, search, realtime, AI features, API integration, CI/CD, Kubernetes, Terraform, Nginx, git, observability, incidents, GDPR, ship & deploy — plus the professional layer: proposals, estimation, kickoff, status reporting, change requests, billing, hiring and onboarding. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
+The complete skills kit for [Claude Code](https://claude.ai/code) — **99 production-ready commands, 20 subagents, 9 rules and 11 domain field-note references** covering the whole job: project mode (brainstorm → cahier des charges → roadmap → execution → acceptance → delivery), fullstack orchestration, frontend, mobile, database, auth, payments, jobs, cache, search, realtime, AI features, API integration, CI/CD, Kubernetes, Terraform, Nginx, git, observability, incidents, GDPR, ship & deploy — plus the professional layer: proposals, estimation, kickoff, status reporting, change requests, billing, hiring and onboarding. Auto-detected for your stack, zero dependencies, plain markdown you can edit.
 
 ![npx claude-skills-kit init — stack detection and skill installation demo](https://raw.githubusercontent.com/LucasRandrianarivo/claude-skills-kit/main/docs/demo.gif)
 
 ## Install
 
+Two routes, and they do different things.
+
+**As a Claude Code plugin** — commands and subagents, available in every project, nothing written into your repository:
+
+```bash
+/plugin marketplace add LucasRandrianarivo/claude-skills-kit
+/plugin install claude-skills-kit@claude-skills-kit
+```
+
+**As a kit installed into the project** — the same commands and agents, *plus* the always-active rules, the field notes, the stack-aware variants resolved for this project, and the `CLAUDE.md` routing block:
+
 ```bash
 npx claude-skills-kit init
 ```
+
+Use both if you want: the plugin for the skills everywhere, the installer for the project-scoped layer. The plugin costs about 5.9k tokens of always-on context (98 skills + 20 agents, verified with `claude plugin details`); `/plugin disable` turns it off per project.
 
 The installer detects your stack (Next.js, Remix, Astro, SvelteKit, Nuxt, Angular, Vue, React+Vite, NestJS, Fastify, Express, Expo/React Native/Flutter, GitHub Actions/GitLab CI — plus Python/Go/Rust projects) and installs the right variant of each stack-aware skill, with a generic fallback so **no stack is ever left without a skill**.
 
@@ -237,6 +250,7 @@ npx claude-skills-kit update                       # refresh installed skills
 | `/diagram` | Description or code → validated Mermaid (or `--excalidraw` for editable output) |
 | `/make-pdf` | Markdown → publication-quality PDF with print-CSS quality bar and verification pass |
 | `/scrape` | Pull structured data from a web page (curl first, Playwright for JS-rendered), politely |
+| `/write` | The documents this kit produces, written and **scored** before they go out: accuracy weighted double, a threshold that forces another pass, and the AI tells that make a reader stop trusting a page |
 | `/skillify` | Meta-skill: codify the workflow you just did into a permanent reusable command |
 | `/rag` | Shared local semantic memory: status, index documents, cross-project semantic search |
 | `/adr` | Architecture Decision Records in `docs/adr/` — created **automatically** by the decisions rule when a significant decision lands; list, supersede, promote, RAG-index |
@@ -395,7 +409,7 @@ Unknown stack? Every stack-aware category has a `generic.md` fallback that disco
 ```
 your-project/
 ├── .claude/
-│   ├── commands/          ← all slash commands (up to 104 in full profile)
+│   ├── commands/          ← all slash commands (up to 105 in full profile)
 │   ├── agents/            ← 20 subagents with proper frontmatter
 │   ├── rules/             ← 9 rules, imported by CLAUDE.md
 │   ├── references/        ← 11 domain field notes (the expertise layer)
@@ -423,6 +437,18 @@ Every installed file is plain markdown in `.claude/`. Edit freely, or use `/skil
 ## Uninstall
 
 Delete the files from `.claude/` and the managed block from `CLAUDE.md`. No global state.
+
+## Composing with other skills
+
+This kit is broad and methodological. For a **specific vendor's product**, install that vendor's own skill instead of writing one — it ships with the product and is versioned against it. Remotion's is the model:
+
+```bash
+npx skills add remotion-dev/skills     # video generation, maintained by Remotion
+```
+
+The kit covers the engineering judgement around such a product: how to integrate it (`/integrate`), keep it current (`/upgrade`, `/api-refresh`), test it (`/testing`), and ship it (`/ship`).
+
+Before installing any third-party skill: read it, because a `SKILL.md` executes with your permissions and one that ships a script runs that script; then pin the version and re-read the diff when it updates. The `expertise` rule states this, and it applies to skills exactly as it applies to dependencies.
 
 ## Verification
 

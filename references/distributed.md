@@ -81,3 +81,10 @@ Always: exponential backoff **with jitter** (synchronized retries are how a reco
 - Adding retries without idempotency — turning a transient failure into duplicate money movement.
 - Building a saga where a single transaction in one database would have done.
 - Monitoring throughput but not queue age, so a stalled consumer is invisible until customers complain.
+
+## Where to check the current truth
+Provider semantics (retry windows, idempotency scope) are contractual and versioned. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- AWS Builders' Library — https://aws.amazon.com/builders-library/ (timeouts, retries, jitter)
+- Microservice patterns — https://microservices.io/patterns/ (outbox, saga, inbox)
+- The vendor's own idempotency and retry documentation, per integration
+- Google SRE Book — https://sre.google/books/ (overload, cascading failure)

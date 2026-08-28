@@ -28,3 +28,7 @@ jobs:
 
       - name: Install scenarios
         run: node scripts/smoke-install.mjs
+
+      # The repo doubles as a Claude Code plugin; both manifests must stay valid.
+      - name: Plugin manifests
+        run: npx -y @anthropic-ai/claude-code plugin validate . --strict

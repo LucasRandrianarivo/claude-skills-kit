@@ -70,3 +70,9 @@ Select by accessible role and name — which doubles as an accessibility check a
 - An hourglass suite (many unit, many e2e, nothing between) — slow, brittle, and blind to exactly the integration bugs that ship.
 - Deleting a failing test to unblock a release, without a ticket. It never comes back.
 - Writing tests only for the code you wrote, never for the bug you just fixed — the regression test is the cheapest test in the suite.
+
+## Where to check the current truth
+Tooling APIs move faster than the principles here. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- Testing Library — https://testing-library.com (queries, and why role-based ones)
+- Playwright — https://playwright.dev · Vitest — https://vitest.dev
+- Practical Test Pyramid — https://martinfowler.com/articles/practical-test-pyramid.html

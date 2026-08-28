@@ -75,3 +75,10 @@ Prompt injection is untrusted input reaching an interpreter that also has your p
 - Reproduce the finding: an unauthenticated `curl` returning the data is the proof; reading code is a hypothesis.
 - Every fix ships with the negative test.
 - Report severity by exploitability × impact, and name the concrete attacker path — "this is insecure" is not a finding.
+
+## Where to check the current truth
+Advisories are live data; never answer from memory here. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- OWASP Top 10 — https://owasp.org/www-project-top-ten/
+- OWASP Cheat Sheets — https://cheatsheetseries.owasp.org (auth, session, headers, uploads)
+- GitHub Advisory Database — https://github.com/advisories · NVD — https://nvd.nist.gov
+- The framework's own security guide, which usually names its escape hatches

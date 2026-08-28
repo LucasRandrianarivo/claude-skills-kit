@@ -2,7 +2,7 @@
 // Verify every executable snippet shipped in the kit.
 //
 // The skills tell people to run this code, so it has to actually be valid.
-// This walks skills/, templates/ and references/, extracts fenced code blocks
+// This walks the component directories, templates/ and references/, extracting
 // that declare a language, and runs the real checker for that language.
 //
 //   node scripts/verify-snippets.mjs            # check everything available
@@ -16,7 +16,7 @@ import { join, relative } from 'node:path';
 import { tmpdir } from 'node:os';
 
 const ROOT = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
-const DIRS = ['skills', 'templates', 'references'];
+const DIRS = ['commands', 'agents', 'rules', 'templates', 'references'];
 const LIST_ONLY = process.argv.includes('--list');
 
 // ── Placeholders ──────────────────────────────────────────────────────────────

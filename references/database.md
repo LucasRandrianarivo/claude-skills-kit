@@ -82,3 +82,10 @@ The practical consequence: at the default level, "check then act" is never safe.
 - Denormalizing before measuring, then owning two sources of truth forever.
 - Choosing a document store to avoid migrations, then rebuilding joins in the application.
 - Trusting the ORM's default fetching strategy; it's optimized for demos, not for your page.
+
+## Where to check the current truth
+The notes carry mechanisms; versions, defaults and limits change. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- PostgreSQL manual — https://www.postgresql.org/docs/current/ (locking: `explicit-locking`, planner: `using-explain`)
+- MySQL reference manual — https://dev.mysql.com/doc/refman/8.4/en/
+- Use The Index, Luke — https://use-the-index-luke.com (index design, by query shape)
+- The engine's release notes before assuming a DDL is non-blocking — that behavior changed across majors

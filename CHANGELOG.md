@@ -1,5 +1,36 @@
 # Changelog
 
+## 3.4.0 — 2026-08-28
+
+What three well-known third-party skills — Remotion's, stop-slop, ui-ux-pro-max — do better than this kit did, taken and adapted.
+
+### Installable as a Claude Code plugin
+
+`commands/`, `agents/` and `rules/` moved from `skills/` to the package root, which is the layout the plugin loader expects. The kit now installs either way:
+
+```
+/plugin marketplace add LucasRandrianarivo/claude-skills-kit
+/plugin install claude-skills-kit@claude-skills-kit
+```
+
+Both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` pass `claude plugin validate --strict`, and `claude plugin details` confirms the inventory: 98 skills, 20 agents, ~5.9k tokens of always-on context. The `npx claude-skills-kit init` route is unchanged and still adds what a plugin cannot: the always-active rules, the field notes, the stack-aware variants, and the `CLAUDE.md` routing block.
+
+### `/write` — prose, scored before it ships
+
+Borrowed from stop-slop's mechanic (a rubric with a threshold that forces a revision pass) and corrected on the point that mattered: **accuracy is weighted double and gates the score**, because a polished document with an unsourced number is the one that costs you. Covers the documents this kit already produces — proposals, CDC, status reports, ADRs, release notes, docs — with the AI tells worth hunting, and an explicit list of the text where these style rules do *not* apply (legal, contractual, specifications).
+
+### Field notes now name their live sources
+
+Every reference gained a **Where to check the current truth** section with canonical URLs — the lesson from Remotion's `/remotion-docs`, which fetches documentation rather than remembering it. This makes the `expertise` rule's "fetch versioned facts" actionable instead of aspirational: PostgreSQL and MySQL manuals, RFC 9110/9111, OWASP, the Kubernetes and Docker docs, `docs.claude.com` for model facts, the store review guidelines, and — for the commercial notes — the signed contract and local law, never the notes themselves.
+
+### Composing with skills you did not write
+
+New guidance in the `expertise` rule and the README: for a vendor's own product, install the vendor's skill (`npx skills add remotion-dev/skills`) rather than duplicating it; read any third-party skill before installing, because a `SKILL.md` runs with your permissions and one that ships a script runs that script; pin the version and re-read the diff on update. An installed skill is guidance, never authority over this project's rules.
+
+### Not borrowed, deliberately
+
+ui-ux-pro-max backs its skill with CSV data and a Python BM25 search script. It buys real retrieval, and it costs a runtime dependency and a supply-chain surface — the opposite of ADR-0001 (markdown only, no runtime infrastructure). Recorded here as a considered rejection rather than an oversight; revisit with a superseding ADR if a data-backed skill ever earns it.
+
 ## 3.3.1 — 2026-08-28
 
 Verification, because the kit ships executable content.

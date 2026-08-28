@@ -59,3 +59,10 @@ Cache the package manager's store keyed on the lockfile; cancel superseded runs;
 - Debugging a container by `exec`-ing in and patching it: the fix disappears at the next restart, and the image is still wrong.
 - Treating infrastructure as pets in the console, then wondering why staging and production differ (`/iac` exists for this).
 - Alerting on node CPU while the user-facing symptom is queue latency.
+
+## Where to check the current truth
+Defaults (grace periods, probe behavior, base images) change between versions. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- Kubernetes docs — https://kubernetes.io/docs/ (probes, QoS, PDB, rollout)
+- Docker docs — https://docs.docker.com/build/ (multi-stage, cache, BuildKit)
+- nginx docs — https://nginx.org/en/docs/ (directive contexts and inheritance)
+- The Twelve-Factor App — https://12factor.net (config, disposability)

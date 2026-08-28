@@ -63,3 +63,10 @@ A framework choice changes *where* the cost lands, never that it exists. SSR mov
 - Shipping a UI library for three components, then styling around it.
 - Measuring performance on a desktop, on localhost, in dev mode — three separate lies at once.
 - Treating accessibility as an audit at the end; the semantics that make it work are the same ones that make selectors stable and tests readable.
+
+## Where to check the current truth
+Framework behavior and the Vitals thresholds themselves get revised. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- Core Web Vitals thresholds — https://web.dev/articles/vitals
+- MDN — https://developer.mozilla.org/en-US/docs/Web (CSS layout, HTML semantics)
+- react.dev · vuejs.org · svelte.dev · angular.dev — the framework's own current guidance
+- Baseline / caniuse — https://caniuse.com for whether a feature is safe to ship

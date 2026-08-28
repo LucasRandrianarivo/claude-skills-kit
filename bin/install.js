@@ -7,7 +7,10 @@ const path = require('path');
 
 // ── Paths ──────────────────────────────────────────────────────────────────────
 const PKG_ROOT = path.resolve(__dirname, '..');
-const SKILLS_DIR = path.join(PKG_ROOT, 'skills');
+// Commands, agents and rules sit at the package root under the names the
+// Claude Code plugin loader expects, so the same repository works both as an
+// installable kit and as a plugin.
+const COMPONENT_DIRS = { commands: path.join(PKG_ROOT, 'commands'), agents: path.join(PKG_ROOT, 'agents'), rules: path.join(PKG_ROOT, 'rules') };
 const TEMPLATES_DIR = path.join(PKG_ROOT, 'templates');
 const REFERENCES_DIR = path.join(PKG_ROOT, 'references');
 const CWD = process.cwd();
@@ -68,7 +71,7 @@ const GROUPS = {
   ],
   knowledge: [
     'learn', 'decisions', 'context-save', 'context-restore',
-    'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag', 'adr',
+    'document', 'diagram', 'make-pdf', 'scrape', 'skillify', 'rag', 'adr', 'write',
   ],
   frontend: [
     'a11y', 'web-vitals', 'responsive', 'state', 'seo', 'i18n',
@@ -531,6 +534,7 @@ function buildSkillRoutingBlock(stack, installedRules, installedCommands) {
     ['Kubernetes & infrastructure as code', [['k8s', '`/k8s`'], ['iac', '`/iac`']]],
     ['Infrastructure cost', [['cost', '`/cost`']]],
     ['Docs, diagrams, PDF', [['document', '`/document`'], ['diagram', '`/diagram`'], ['make-pdf', '`/make-pdf`']]],
+    ['Write or check a document before it goes out', [['write', '`/write`']]],
     ['Knowledge & memory', [['learn', '`/learn`'], ['decisions', '`/decisions`'], ['context-save', '`/context-save`'], ['context-restore', '`/context-restore`']]],
     ['Health & retro', [['health', '`/health`'], ['retro', '`/retro`']]],
   ]
@@ -616,9 +620,9 @@ function cmdList() {
   console.log('  ====================================');
 
   const sections = [
-    ['commands', path.join(SKILLS_DIR, 'commands'), 'Slash commands'],
-    ['agents', path.join(SKILLS_DIR, 'agents'), 'Subagents'],
-    ['rules', path.join(SKILLS_DIR, 'rules'), 'Rules (always active)'],
+    ['commands', COMPONENT_DIRS.commands, 'Slash commands'],
+    ['agents', COMPONENT_DIRS.agents, 'Subagents'],
+    ['rules', COMPONENT_DIRS.rules, 'Rules (always active)'],
   ];
 
   const groupOf = (name) => {
@@ -676,7 +680,7 @@ function cmdList() {
 
 function findSkillSource(name) {
   for (const sub of ['commands', 'agents', 'rules']) {
-    const p = path.join(SKILLS_DIR, sub, `${name}.md`);
+    const p = path.join(COMPONENT_DIRS[sub], `${name}.md`);
     if (fs.existsSync(p)) return { src: p, sub };
   }
   // Field notes live in references/<name>.md and install alongside the skills.
@@ -803,7 +807,7 @@ function cmdInit() {
 
   const installedRules = [];
   for (const [sub, include] of skillSubdirs) {
-    const srcDir = path.join(SKILLS_DIR, sub);
+    const srcDir = COMPONENT_DIRS[sub];
     const files = walkDir(srcDir);
     if (files.length === 0) continue;
 

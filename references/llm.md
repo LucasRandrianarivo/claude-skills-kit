@@ -65,3 +65,9 @@ Retrieval helps when the answer exists in a corpus and must be current or privat
 - Building an autonomous agent loop where a deterministic workflow with one LLM step would be more reliable and 10× cheaper.
 - Shipping without evals, then discovering the regression from a customer.
 - Trusting the model's confidence: fluency and correctness are unrelated.
+
+## Where to check the current truth
+Models, prices, context limits and caching rules change monthly — never answer these from memory. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- Anthropic documentation — https://docs.claude.com (models, pricing, prompt caching, tool use)
+- OWASP Top 10 for LLM Applications — https://genai.owasp.org
+- The provider's own changelog before pinning or migrating a model

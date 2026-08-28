@@ -54,3 +54,10 @@ Back navigation (Android hardware back must do something sensible everywhere), s
 - Adding a native dependency casually — it changes the build, the review, and the OTA story.
 - Testing only on the newest flagship simulator, where every performance problem is invisible.
 - Shipping without a server-side flag on a risky feature, then waiting days for a fix build.
+
+## Where to check the current truth
+Store rules and platform APIs change every release cycle. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- React Native — https://reactnative.dev · Expo — https://docs.expo.dev
+- Flutter — https://docs.flutter.dev
+- App Store Review Guidelines — https://developer.apple.com/app-store/review/guidelines/
+- Google Play policy centre — https://support.google.com/googleplay/android-developer/

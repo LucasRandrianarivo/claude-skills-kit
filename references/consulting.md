@@ -68,3 +68,10 @@ Deposit before starting (30% is common), then milestone-linked invoicing so the 
 - Absorbing small changes to be nice, then discovering the margin is gone and having no record of why.
 - Reporting green until the week the deadline is missed.
 - Starting without a deposit, an access list, or a named decision-maker.
+
+## Where to check the current truth
+Everything commercial here is jurisdiction- and contract-specific. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- The signed contract and CDC for this engagement — they outrank any general practice
+- Local law on payment terms and late-payment interest (in France: Code de commerce, art. L441-10)
+- Your professional body or accountant for invoicing, VAT and IP-transfer specifics
+- Never state a legal obligation from these notes — route it to counsel (`/rgpd` follows the same rule)

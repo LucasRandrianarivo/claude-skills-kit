@@ -65,3 +65,10 @@ A diagram of boxes with no arrows labeled with *what flows and who owns it* is d
 - Sharing a database across services "temporarily".
 - Designing for a scale that never arrives, while the actual bottleneck (one missing index, one N+1) sits untouched.
 - Treating the architecture diagram as the truth instead of the code — verify the diagram against the imports and the network calls before trusting it.
+
+## Where to check the current truth
+Patterns are stable; the trade-offs are context-dependent, so read the current debate rather than a summary. Fetch and cite these before stating a version-specific fact — the `expertise` rule requires it:
+- martinfowler.com — https://martinfowler.com (strangler fig, microservice trade-offs)
+- Microservice patterns — https://microservices.io/patterns/
+- ADR practice — https://adr.github.io
+- AWS Builders' Library — https://aws.amazon.com/builders-library/
