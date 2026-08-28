@@ -424,13 +424,29 @@ Every installed file is plain markdown in `.claude/`. Edit freely, or use `/skil
 
 Delete the files from `.claude/` and the managed block from `CLAUDE.md`. No global state.
 
+## Verification
+
+The kit ships executable content — nginx configs, Dockerfiles, CI YAML, shell commands — so it is checked the way code is, not proofread:
+
+```bash
+npm test        # everything below
+npm run verify  # every fenced snippet, through its real checker
+npm run smoke   # install scenarios across stacks and profiles
+```
+
+`verify` extracts every fenced block that declares a language and runs the actual tool: `nginx -t` for nginx, `bash -n` + shellcheck for shell, real parsers for JSON/YAML/JS, and a structural lint for the Dockerfile (stage references, exec-form `CMD`, non-root `USER`, no devDependencies in the runtime stage). `smoke` installs into throwaway fixtures and asserts the stack detection, the variant chosen, and that a narrow profile's `CLAUDE.md` never advertises a skill it didn't install. Both run in CI on every push.
+
+This exists because it found real bugs: a proxy snippet that failed `nginx -t` when copied on its own, `add_header` silently dropping inherited security headers, devDependencies reaching a production image, and a webhook ordering that lost events. Documentation gets proofread; code gets executed.
+
 ## Contributing
 
 PRs welcome. To add support for a new framework or UI library:
 
 1. Add a template variant in `templates/<category>/<variant>.md`
 2. Update the detection logic in `bin/install.js`
-3. Update the README stack detection table
+3. Add a scenario to `scripts/smoke-install.mjs` asserting the new detection
+4. Update the README stack detection table
+5. Run `npm test` — snippets and install scenarios must pass
 
 ## License
 

@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.3.1 — 2026-08-28
+
+Verification, because the kit ships executable content.
+
+- **`npm run verify`** (`scripts/verify-snippets.mjs`): extracts every fenced block that declares a language across `skills/`, `templates/` and `references/`, and runs the real checker — `nginx -t` for nginx, `bash -n` + shellcheck for shell, real parsers for JSON/YAML/JS, and a structural lint for the Dockerfile (stage references, exec-form `CMD`, non-root `USER`, no devDependencies in the runtime stage). 52 blocks, all passing.
+- **`npm run smoke`** (`scripts/smoke-install.mjs`): installs into throwaway fixtures across five scenarios and asserts stack detection, the variant resolved, profile contents, and that a narrow profile's `CLAUDE.md` never advertises a skill it didn't install.
+- **CI** (`.github/workflows/verify.yml`) runs both on every push, with the checkers installed.
+- **Fixed by the new verifier**: the reverse-proxy snippet in `/nginx` referenced `$connection_upgrade` while its `map` lived in a separate fenced block — copied on its own it still failed `nginx -t`, which is exactly the error the surrounding text warned about. The `map`, `upstream` and `server` now ship as one snippet that passes `nginx -t` as written.
+
 ## 3.3.0 — 2026-08-27
 
 The professional layer: the work around the code — client engagements and team practice.

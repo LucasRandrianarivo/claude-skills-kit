@@ -1,6 +1,6 @@
 {
   "name": "claude-skills-kit",
-  "version": "3.3.0",
+  "version": "3.3.1",
   "description": "The complete skills kit for Claude Code — 98 commands, 20 subagents, 9 rules and 11 domain field-note references: client work (proposals, estimation, change requests, billing), project mode, fullstack orchestration, frontend, mobile, database, auth, payments, backend systems, AI features, CI/CD, Kubernetes, observability, GDPR, ship & deploy.",
   "author": "Lucas Randrianarivo <luca@supplyos.com>",
   "license": "MIT",
@@ -85,5 +85,10 @@
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
-  ]
+  ],
+  "scripts": {
+    "verify": "node scripts/verify-snippets.mjs",
+    "smoke": "node scripts/smoke-install.mjs",
+    "test": "node --check bin/install.js && node scripts/verify-snippets.mjs && node scripts/smoke-install.mjs"
+  }
 }

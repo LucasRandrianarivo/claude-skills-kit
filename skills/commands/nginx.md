@@ -34,10 +34,13 @@ Field notes: `.claude/references/http.md` — mechanism, traps and the symptom�
 
 **Reverse proxy (app upstream)**
 
-The `map` goes in the `http` block, once per server — `$connection_upgrade` does
-not exist without it, and `nginx -t` fails with `unknown "connection_upgrade" variable`:
+The `map` and the `upstream` live in the `http` block, the `location` inside a
+`server` — and they ship together. Copying only the `location` is the most common
+mistake: `$connection_upgrade` does not exist without its `map`, and `nginx -t`
+fails with `unknown "connection_upgrade" variable`.
 ```nginx
-map $http_upgrade $connection_upgrade {   # http context, not inside server/location
+# http context — once per server
+map $http_upgrade $connection_upgrade {
     default upgrade;
     ''      close;
 }
@@ -46,22 +49,28 @@ upstream app_upstream {
     server 127.0.0.1:3000;
     keepalive 32;                          # without this, a new connection per request
 }
-```
-```nginx
-location / {
-    proxy_pass http://app_upstream;
-    proxy_http_version 1.1;                       # keepalive + WebSocket support
-    proxy_set_header Host              $host;
-    proxy_set_header X-Real-IP         $remote_addr;
-    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto $scheme;   # or the app builds http:// URLs
-    proxy_set_header Upgrade           $http_upgrade;   # WebSockets
-    proxy_set_header Connection        $connection_upgrade;
-    proxy_read_timeout 60s;                       # raise only for streaming/SSE
-    proxy_buffering on;                           # OFF for SSE/streaming responses
+
+server {
+    listen 80;
+    server_name example.test;
+
+    location / {
+        proxy_pass http://app_upstream;
+        proxy_http_version 1.1;                       # keepalive + WebSocket support
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;   # or the app builds http:// URLs
+        proxy_set_header Upgrade           $http_upgrade;   # WebSockets
+        proxy_set_header Connection        $connection_upgrade;
+        proxy_read_timeout 60s;                       # raise only for streaming/SSE
+        proxy_buffering on;                           # OFF for SSE/streaming responses
+    }
 }
 ```
-`proxy_http_version 1.1` and an empty `Connection` header are what make upstream keepalive work; without both, the pool above is ignored.
+`proxy_http_version 1.1` and the `Connection` header driven by the map are what make upstream keepalive and WebSocket upgrades work together; without both, the pool above is ignored.
+
+Verify before reloading, always: `nginx -t` catches every one of these at build time rather than at 3am.
 
 **SPA (static + history fallback)**
 
